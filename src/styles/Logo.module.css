@@ -1,0 +1,27 @@
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #000;
+  margin-bottom: 30px;
+}
+
+.logoBox {
+  border: 1px solid #000;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.logoName {
+  font-size: 14px;
+  letter-spacing: 1px;
+} 

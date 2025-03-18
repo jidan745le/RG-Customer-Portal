@@ -1,0 +1,64 @@
+.pageContainer {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.loginSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: white;
+  padding: 30px;
+}
+
+.loginContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 450px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 50px 0;
+}
+
+.imageSide {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Add overlay to make the image darker */
+.imageSide::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Media query for smaller screens */
+@media (max-width: 992px) {
+  .pageContainer {
+    flex-direction: column;
+  }
+  
+  .loginSide {
+    order: 2;
+    min-height: 70vh;
+  }
+  
+  .imageSide {
+    order: 1;
+    min-height: 30vh;
+  }
+  
+  .loginContent {
+    padding: 30px 0;
+  }
+} 
