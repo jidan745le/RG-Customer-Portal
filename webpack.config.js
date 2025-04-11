@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   entry: './src/index.js',
@@ -26,8 +27,11 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/,
-        use: ['file-loader']
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'assets/images/[hash][ext][query]'
+        }
       }
     ]
   },
@@ -40,21 +44,23 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { 
-          from: 'public/images', 
-          to: 'images' 
+        {
+          from: 'public/images',
+          to: 'images'
         }
       ]
-    })
+    }),
   ],
   devServer: {
     historyApiFallback: true,
     hot: true,
-    static: [
-      {
-        directory: path.join(__dirname, 'public'),
-        publicPath: '/'
+    port: 8080,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
       }
-    ]
-  }
+    }
+  },
+  mode: 'development'
 }; 

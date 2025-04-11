@@ -1,0 +1,65 @@
+.dashboardContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa; /* Light grey background */
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 30px 50px; /* Adjust padding as needed */
+  max-width: 1400px; /* Limit max width */
+  margin: 0 auto; /* Center content */
+  width: 100%;
+}
+
+/* Placeholder for the top section if needed later */
+.topSectionPlaceholder {
+  height: 100px; /* Example height */
+  margin-bottom: 30px;
+  /* border: 1px dashed #ccc; */ /* Optional: show placeholder border */
+  /* background-color: #fff; */
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Adjust column ratio as needed */
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.leftColumn {
+  /* Styles for the left column (Your Apps) */
+}
+
+.rightColumn {
+  /* Styles for the right column (Insights, Links) */
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .gridContainer {
+    grid-template-columns: 1.5fr 1fr;
+  }
+  .mainContent {
+    padding: 20px 30px;
+  }
+}
+
+@media (max-width: 992px) {
+  .gridContainer {
+    grid-template-columns: 1fr; /* Stack columns */
+  }
+  .mainContent {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 15px;
+  }
+} 

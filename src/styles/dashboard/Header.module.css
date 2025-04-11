@@ -1,0 +1,127 @@
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px; /* 调整内边距 */
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky; /* 固定头部 */
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 40px; /* Logo和导航的间距 */
+}
+
+/* 调整Logo组件的间距 */
+.leftSection > a:first-child { /* Target the Logo Link */
+  margin-bottom: 0 !important; /* Override Logo's bottom margin */
+}
+
+.navigation {
+  display: flex;
+  gap: 25px; /* 导航链接间距 */
+}
+
+.navLink {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 5px 0;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.navLink:hover {
+  color: #e53935; /* 悬停颜色 */
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #e53935;
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after,
+.navLink.active::after { /* 假设有active状态 */
+  width: 100%;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 调整语言选择器的位置 */
+.rightSection > div:first-child { /* Target LanguageSelector */
+  position: static !important; /* Override absolute positioning */
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.userName {
+  font-weight: 500;
+  color: #333;
+}
+
+.logoutButton {
+  background-color: transparent;
+  border: 1px solid #e53935;
+  color: #e53935;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: #e53935;
+  color: #fff;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .headerContainer {
+    padding: 15px 30px;
+  }
+  .navigation {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .navigation {
+    display: none; /* 在小屏幕上隐藏导航 */
+  }
+  .leftSection {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .headerContainer {
+    padding: 10px 15px;
+  }
+  .rightSection {
+    gap: 10px;
+  }
+  .userName {
+    display: none; /* 更小屏幕隐藏用户名 */
+  }
+} 
