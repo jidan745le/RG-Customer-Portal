@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import apiClient from '../utils/apiClient';
 
 const AuthContext = createContext(null);
@@ -8,7 +8,17 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('authToken'));
     const [loading, setLoading] = useState(true); // 添加加载状态
+    const [returnUrl, setReturnUrl] = useState(null);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const returnUrlParam = params.get('returnUrl');
+        if (returnUrlParam) {
+            setReturnUrl(returnUrlParam);
+        }
+    }, [location]);
 
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');
@@ -44,7 +54,13 @@ export const AuthProvider = ({ children }) => {
             setToken(newToken);
             setUser(userData);
             setLoading(false);
-            navigate('/dashboard'); // 登录成功后跳转到主界面
+
+            // Handle redirection based on returnUrl
+            if (returnUrl) {
+                window.location.href = returnUrl;
+            } else {
+                navigate('/dashboard');
+            }
         } catch (error) {
             setLoading(false);
             console.error('Login failed:', error);
