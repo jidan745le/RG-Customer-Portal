@@ -13,11 +13,9 @@ export const AuthProvider = ({ children }) => {
     const location = useLocation();
 
     useEffect(() => {
-        alert(1)
         const params = new URLSearchParams(location.search);
         const returnUrlParam = params.get('returnUrl');
         if (returnUrlParam) {
-            alert(returnUrlParam)
             setReturnUrl(returnUrlParam);
             console.log('returnUrlParam', returnUrlParam);
         }
@@ -60,7 +58,6 @@ export const AuthProvider = ({ children }) => {
 
             // Handle redirection based on returnUrl
             if (returnUrl) {
-                alert(returnUrl)
                 setTimeout(() => {
                     window.location.href = returnUrl;
                 });
