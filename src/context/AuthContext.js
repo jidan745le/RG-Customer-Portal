@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
         const returnUrlParam = params.get('returnUrl');
         if (returnUrlParam) {
             setReturnUrl(returnUrlParam);
+            console.log('returnUrlParam', returnUrlParam);
         }
     }, [location]);
 
@@ -57,7 +58,9 @@ export const AuthProvider = ({ children }) => {
 
             // Handle redirection based on returnUrl
             if (returnUrl) {
-                window.location.href = returnUrl;
+                setTimeout(() => {
+                    window.location.href = returnUrl;
+                });
             } else {
                 navigate('/dashboard');
             }
