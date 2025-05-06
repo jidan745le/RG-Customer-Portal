@@ -1,0 +1,147 @@
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.cardHeader {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.logoContainer {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+}
+
+.logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.appLabel {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.priceLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.free {
+  background-color: #ecfdf5;
+  color: #065f46;
+}
+
+.paid {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.cardBody {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.description {
+  color: #4b5563;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.cardFooter {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.learnMoreButton {
+  background-color: transparent;
+  color: #4f46e5;
+  border: 1px solid #4f46e5;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.learnMoreButton:hover {
+  background-color: #4f46e5;
+  color: white;
+}
+
+/* 未认证状态卡片样式 */
+.nonAuth {
+  position: relative;
+  filter: grayscale(0.2);
+}
+
+.authOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.nonAuth:hover .authOverlay {
+  opacity: 1;
+}
+
+.authOverlayButton {
+  background-color: #3182ce;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.authOverlayButton:hover {
+  background-color: #2c5282;
+}
+
+.limitedFeatures {
+  color: #a0aec0;
+  font-size: 0.8rem;
+  font-style: italic;
+} 

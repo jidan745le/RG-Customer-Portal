@@ -1,31 +1,10 @@
-.dashboardContainer {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #f8f9fa; /* Light grey background */
-}
-
-.mainContent {
-  flex-grow: 1;
-  padding: 30px 50px; /* Adjust padding as needed */
-  max-width: 1400px; /* Limit max width */
-  margin: 0 auto; /* Center content */
-  width: 100%;
-}
-
-/* Placeholder for the top section if needed later */
-.topSectionPlaceholder {
-  height: 100px; /* Example height */
-  margin-bottom: 30px;
-  /* border: 1px dashed #ccc; */ /* Optional: show placeholder border */
-  /* background-color: #fff; */
-}
-
 .gridContainer {
   display: grid;
   grid-template-columns: 2fr 1fr; /* Adjust column ratio as needed */
   gap: 30px;
-  margin-bottom: 40px;
+  max-width: 1400px;
+  margin: 0 auto 40px;
+  padding: 0 2rem;
 }
 
 .leftColumn {
@@ -39,13 +18,49 @@
   gap: 30px;
 }
 
+.topSection {
+  background-color: #f0f4f8;
+  padding: 2rem;
+  border-radius: 8px;
+}
+
+.marketplacePromo {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.marketplacePromo h2 {
+  font-size: 1.8rem;
+  color: #1a202c;
+  margin-bottom: 1rem;
+}
+
+.marketplacePromo p {
+  color: #4a5568;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.marketplaceButton {
+  display: inline-block;
+  background-color: #65a30d;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.marketplaceButton:hover {
+  background-color: #4d7c0f;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1200px) {
   .gridContainer {
     grid-template-columns: 1.5fr 1fr;
-  }
-  .mainContent {
-    padding: 20px 30px;
   }
 }
 
@@ -53,13 +68,10 @@
   .gridContainer {
     grid-template-columns: 1fr; /* Stack columns */
   }
-  .mainContent {
-    padding: 20px;
-  }
 }
 
 @media (max-width: 768px) {
-  .mainContent {
-    padding: 15px;
+  .topSection, .gridContainer {
+    padding: 1rem;
   }
 } 

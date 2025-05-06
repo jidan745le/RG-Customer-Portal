@@ -1,11 +1,14 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import DashboardPage from './pages/DashboardPage';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import MainLayout from './components/layout/MainLayout';
+import PublicLayout from './components/layout/PublicLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
+import DashboardPage from './pages/DashboardPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import LoginPage from './pages/LoginPage';
+import MarketplacePage from './pages/MarketplacePage';
+import SignUpPage from './pages/SignUpPage';
 
 const App = () => {
   const { token, loading } = useAuth();
@@ -22,9 +25,23 @@ const App = () => {
         path="/"
         element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />}
       />
+
+      {/* 公共可访问的Marketplace路由（仅非登录用户访问） */}
+      {!token && (
+        <Route element={<PublicLayout />}>
+          <Route path="/marketplace" element={<MarketplacePage />} />
+        </Route>
+      )}
+
+      {/* 受保护的路由，需要登录 */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* 登录用户的Marketplace路由 */}
+          <Route path="/marketplace" element={<MarketplacePage />} />
+        </Route>
       </Route>
+
       <Route path="*" element={<Navigate to={token ? "/dashboard" : "/"} replace />} />
     </Routes>
   );

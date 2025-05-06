@@ -1,0 +1,162 @@
+.header {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.rightSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.userControls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navigation {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #4a5568;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.navLink:hover {
+  color: #2c3e50;
+}
+
+.navLink.active {
+  color: #3182ce;
+  font-weight: 500;
+}
+
+.navLink.active::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #3182ce;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.userName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.logoutButton {
+  background: transparent;
+  border: none;
+  color: #e53e3e;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: color 0.2s;
+}
+
+.logoutButton:hover {
+  color: #c53030;
+}
+
+.loginLink {
+  background-color: #3182ce;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.loginLink:hover {
+  background-color: #2c5282;
+}
+
+@media (max-width: 1024px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .rightSection {
+    width: 100%;
+    align-items: flex-start;
+    margin-top: 1rem;
+  }
+  
+  .navigation {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .leftSection {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .navigation {
+    display: none; /* Consider a mobile menu toggle for small screens */
+  }
+  
+  .userControls {
+    margin-top: 0.5rem;
+  }
+} 
