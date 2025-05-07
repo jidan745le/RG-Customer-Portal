@@ -16,8 +16,10 @@ const AdminSidebar = () => {
             active: true,
             collapsed: false,
             subItems: [
-                { id: 'basic', label: 'Basic Settings', path: '/administration' },
-                { id: 'look', label: 'Look & Feel', path: '/administration/look-and-feel' },
+                { id: 'basic', label: 'Look & Feel', path: '/administration/basic' },
+                { id: 'users', label: 'User Management', path: '/administration/users' },
+                { id: 'content', label: 'Content Management', path: '/administration/content' },
+                { id: 'notifications', label: 'Notifications', path: '/administration/notifications' },
             ]
         },
         {
@@ -27,8 +29,8 @@ const AdminSidebar = () => {
             active: false,
             collapsed: true,
             subItems: [
-                { id: 'roles', label: 'Roles & Permissions', path: '/user-management/roles' },
-                { id: 'groups', label: 'User Groups', path: '/user-management/groups' }
+                { id: 'roles', label: 'Roles & Permissions', path: '/administration/users' },
+                { id: 'groups', label: 'User Groups', path: '/administration/users' }
             ]
         }
     ]);

@@ -1,10 +1,16 @@
 import React from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import AdminLayout from './components/layout/AdminLayout';
 import MainLayout from './components/layout/MainLayout';
 import PublicLayout from './components/layout/PublicLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
-import AdministrationPage from './pages/AdministrationPage';
+import {
+  BasicSettingsPage,
+  ContentManagementPage,
+  NotificationsPage,
+  UserManagementPage
+} from './pages/administration';
 import DashboardPage from './pages/DashboardPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import LoginPage from './pages/LoginPage';
@@ -40,9 +46,17 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           {/* 登录用户的Marketplace路由 */}
           <Route path="/marketplace" element={<MarketplacePage />} />
-          {/* 管理员页面 */}
-          <Route path="/administration" element={<AdministrationPage />} />
+          <Route path="/administration" element={<AdminLayout />}>
+            <Route path="" element={<Navigate to="/administration/basic" replace />} />
+            <Route path="basic" element={<BasicSettingsPage title="Look & Feel" />} />
+            <Route path="users" element={<UserManagementPage title="User Management" />} />
+            <Route path="content" element={<ContentManagementPage title="Content Management" />} />
+            <Route path="notifications" element={<NotificationsPage title="Notifications" />} />
+          </Route>
         </Route>
+
+        {/* Administration routes with AdminLayout */}
+
       </Route>
 
       <Route path="*" element={<Navigate to={token ? "/dashboard" : "/"} replace />} />

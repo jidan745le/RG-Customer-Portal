@@ -3,7 +3,6 @@ import axios from 'axios';
 // 创建axios实例
 const apiClient = axios.create({
     baseURL: '/api', // 你的NestJS API基础URL
-    timeout: 5000, // 请求超时时间
     headers: {
         'Content-Type': 'application/json',
     },

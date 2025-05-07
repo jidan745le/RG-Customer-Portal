@@ -36,7 +36,7 @@ const Header = ({ isPublic = false }) => {
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                className={`${styles.navLink} ${location.pathname === item.path ? styles.active : ''}`}
+                                className={`${styles.navLink} ${location.pathname.startsWith(item.path) ? styles.active : ''}`}
                             >
                                 {item.label}
                             </Link>
