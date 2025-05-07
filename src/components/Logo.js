@@ -6,7 +6,7 @@ import styles from '../styles/Logo.module.css';
 const Logo = () => {
   return (
     <Link to="/" className={styles.logo}>
-      <img style={{ width: '80px' }} src={logoImage} alt="Logo" className={styles.logoImage} />
+      <img style={{ width: '64px' }} src={logoImage} alt="Logo" className={styles.logoImage} />
     </Link>
   );
 };

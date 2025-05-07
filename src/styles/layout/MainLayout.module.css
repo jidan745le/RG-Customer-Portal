@@ -3,16 +3,30 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #f7f9fc;
+  position: relative;
 }
 
 .mainContent {
   flex: 1;
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1; /* 确保内容正常显示 */
+  min-height: calc(100vh - 120px); /* 减去header和footer的高度 */
+  margin-top: 60px; /* 为固定的header留出空间 */
+}
+
+/* 当为管理页面时，内容区域占满底部空间 */
+.administrationContent {
+  min-height: calc(100vh - 60px); /* 只减去header的高度，不为footer预留空间 */
+  height: calc(100vh - 60px); /* 固定高度以防止内容溢出 */
+  overflow: hidden; /* 防止整体滚动 */
+  margin-top: 0; /* 确保不会有额外空间 */
+  padding-top: 0; /* 确保不会有额外空间 */
 }
 
 @media (max-width: 768px) {
   .mainContent {
-    padding-top: 60px; /* Adjust for fixed header on mobile if needed */
+    padding-top: 0; /* 移除移动端的顶部padding */
   }
 } 

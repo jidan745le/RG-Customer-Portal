@@ -4,6 +4,7 @@ import MainLayout from './components/layout/MainLayout';
 import PublicLayout from './components/layout/PublicLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
+import AdministrationPage from './pages/AdministrationPage';
 import DashboardPage from './pages/DashboardPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import LoginPage from './pages/LoginPage';
@@ -39,6 +40,8 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           {/* 登录用户的Marketplace路由 */}
           <Route path="/marketplace" element={<MarketplacePage />} />
+          {/* 管理员页面 */}
+          <Route path="/administration" element={<AdministrationPage />} />
         </Route>
       </Route>
 
