@@ -5,9 +5,9 @@ import apiClient from '../utils/apiClient';
  * @param {string} appcode - 应用代码
  * @returns {Promise} - API响应
  */
-export const getAppConfig = async (appcode) => {
+export const getAppConfig = async (appcode, mode) => {
     try {
-        const url = appcode ? `/app-config?appcode=${appcode}` : '/app-config';
+        const url = appcode ? `/app-config?appcode=${appcode}&mode=${mode || ''}` : '/app-config';
         const response = await apiClient.get(url);
         return response.data;
     } catch (error) {
