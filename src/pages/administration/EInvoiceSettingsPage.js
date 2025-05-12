@@ -4,7 +4,7 @@ import axios from 'axios';
 import CryptoJS from 'crypto-js';
 import dayjs from 'dayjs';
 import { omit } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getAppConfig, updateAppConfig } from '../../services/configService';
 import { uploadFile } from '../../services/fileService';
 import styles from '../../styles/pages/AdministrationPage.module.css';
@@ -56,6 +56,41 @@ const EInvoiceSettingsPage = ({ title }) => {
         bankName: '',
         bankAccount: '',
     });
+
+    // DEMO: 登录与认证流程状态
+    const [loginStatus, setLoginStatus] = useState('未知');
+    const [certifyStatus, setCertifyStatus] = useState('未知');
+    const [loginLoading, setLoginLoading] = useState(false);
+    const [certifyLoading, setCertifyLoading] = useState(false);
+    const loginPollingRef = useRef(null);
+    const certifyPollingRef = useRef(null);
+    // 新增：内部状态模拟
+    const loginSimulateRef = useRef({ done: false });
+    const certifySimulateRef = useRef({ done: false });
+
+    // DEMO: mock api
+    const mockApi = {
+        getLoginResult: async () => {
+            await new Promise(r => setTimeout(r, 1000));
+            return loginSimulateRef.current.done ? '已登录' : '未登录';
+        },
+        getLoginUrl: async () => {
+            await new Promise(r => setTimeout(r, 500));
+            // 启动3秒后自动登录
+            setTimeout(() => { loginSimulateRef.current.done = true; }, 3000);
+            return 'https://mock-login-url';
+        },
+        getCertifyResult: async () => {
+            await new Promise(r => setTimeout(r, 1000));
+            return certifySimulateRef.current.done ? '已认证' : '未认证';
+        },
+        getCertifyUrl: async () => {
+            await new Promise(r => setTimeout(r, 500));
+            // 启动3秒后自动认证
+            setTimeout(() => { certifySimulateRef.current.done = true; }, 3000);
+            return 'https://mock-certify-url';
+        }
+    };
 
     useEffect(() => {
         fetchSettings();
@@ -338,6 +373,60 @@ const EInvoiceSettingsPage = ({ title }) => {
             });
     };
 
+    // DEMO: 数电账号登录流程
+    const handleDemoLogin = async () => {
+        loginSimulateRef.current.done = false;
+        setLoginLoading(true);
+        setLoginStatus('查询中...');
+        // 1. 查询登录状态
+        const status = await mockApi.getLoginResult();
+        if (status === '已登录') {
+            setLoginStatus('已登录');
+            setLoginLoading(false);
+            return;
+        }
+        // 2. 未登录，发送短信
+        await mockApi.getLoginUrl();
+        setLoginStatus('请在手机短信中点击H5链接完成登录...');
+        // 3. 轮询登录状态
+        if (loginPollingRef.current) clearInterval(loginPollingRef.current);
+        loginPollingRef.current = setInterval(async () => {
+            const pollStatus = await mockApi.getLoginResult();
+            if (pollStatus === '已登录') {
+                setLoginStatus('已登录');
+                setLoginLoading(false);
+                clearInterval(loginPollingRef.current);
+            }
+        }, 2000);
+    };
+
+    // DEMO: 实人认证流程
+    const handleDemoCertify = async () => {
+        certifySimulateRef.current.done = false;
+        setCertifyLoading(true);
+        setCertifyStatus('查询中...');
+        // 1. 查询认证状态
+        const status = await mockApi.getCertifyResult();
+        if (status === '已认证') {
+            setCertifyStatus('已认证');
+            setCertifyLoading(false);
+            return;
+        }
+        // 2. 未认证，发送短信
+        await mockApi.getCertifyUrl();
+        setCertifyStatus('请在手机短信中点击H5链接完成刷脸认证...');
+        // 3. 轮询认证状态
+        if (certifyPollingRef.current) clearInterval(certifyPollingRef.current);
+        certifyPollingRef.current = setInterval(async () => {
+            const pollStatus = await mockApi.getCertifyResult();
+            if (pollStatus === '已认证') {
+                setCertifyStatus('已认证');
+                setCertifyLoading(false);
+                clearInterval(certifyPollingRef.current);
+            }
+        }, 2000);
+    };
+
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -517,9 +606,10 @@ const EInvoiceSettingsPage = ({ title }) => {
                                     <Form.Item
                                         label="TOKEN"
                                         name="token"
+                                        rules={[{ required: true, message: 'Please get the TOKEN first' }]}
                                     >
-                                        <Input
-                                            disabled
+                                        <Input.Password
+
                                             placeholder="Read only"
                                             addonAfter={
                                                 <Button
@@ -629,7 +719,7 @@ const EInvoiceSettingsPage = ({ title }) => {
 
                             {/* Authentication Tab */}
                             <TabPane tab="Authentication" key="authentication" forceRender={true}>
-                                <div className={styles.settingSection}>
+                                {/* <div className={styles.settingSection}>
                                     <h3>Tax Agency</h3>
                                     <Button
                                         type="primary"
@@ -637,6 +727,19 @@ const EInvoiceSettingsPage = ({ title }) => {
                                     >
                                         Request Authentication
                                     </Button>
+                                </div> */}
+                                <div style={{ marginTop: 24, padding: 16, border: '1px solid #eee', borderRadius: 8 }}>
+                                    <h3>认证流程</h3>
+                                    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+                                        <Button type="primary" loading={loginLoading} onClick={handleDemoLogin}>
+                                            数电账号登录
+                                        </Button>
+                                        <span>登录状态：<b>{loginStatus}</b></span>
+                                        <Button type="primary" loading={certifyLoading} onClick={handleDemoCertify}>
+                                            实人认证
+                                        </Button>
+                                        <span>认证状态：<b>{certifyStatus}</b></span>
+                                    </div>
                                 </div>
                             </TabPane>
 
