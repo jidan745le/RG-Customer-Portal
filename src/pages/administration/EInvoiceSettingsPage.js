@@ -1,5 +1,5 @@
 import { SaveOutlined } from '@ant-design/icons';
-import { Button, ColorPicker, Form, Input, message, Select, Spin, Switch, Tabs, TimePicker } from 'antd';
+import { Button, ColorPicker, ConfigProvider, Form, Input, message, Select, Spin, Switch, Tabs, TimePicker } from 'antd';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 import dayjs from 'dayjs';
@@ -439,389 +439,383 @@ const EInvoiceSettingsPage = ({ title }) => {
     console.log(primaryColor, taxAgencySettings, "primaryColor");
 
     return (
-        <div style={{ height: '100%', overflowY: 'auto' }}>
-            <h1 className={styles.title}></h1>
-            <div className={styles.settingsContainer}>
-                <div className={styles.settingsPanel}>
-                    <h2 className={styles.settingsTitle}>{title}</h2>
+        <ConfigProvider theme={{
+            token: {
+                // Seed Token
+                colorPrimary: primaryColor,
 
-                    <Form
-                        form={form}
-                        layout="vertical"
-                        initialValues={{
-                            ...serverSettings,
-                            ...taxAgencySettings,
-                            ...processSettings,
-                            ...companyInfo,
-                            primaryColor: primaryColor,
-                        }}
-                    >
-                        <Tabs
-                            activeKey={activeTab}
-                            onChange={setActiveTab}
-                            tabPosition="left"
-                            className={styles.settingsTabs}
-                            destroyInactiveTabPane={false}
+            },
+        }}>
+            <div style={{ height: '100%', overflowY: 'auto' }}>
+                <h1 className={styles.title}></h1>
+                <div className={styles.settingsContainer}>
+                    <div className={styles.settingsPanel}>
+                        <h2 className={styles.settingsTitle} style={{ textAlign: 'left' }}>{title}</h2>
+
+                        <Form
+                            form={form}
+                            layout="vertical"
+                            initialValues={{
+                                ...serverSettings,
+                                ...taxAgencySettings,
+                                ...processSettings,
+                                ...companyInfo,
+                                primaryColor: primaryColor,
+                            }}
                         >
-                            {/* Look & Feel Tab */}
-                            <TabPane tab="Look & Feel" key="lookAndFeel" forceRender={true}>
-                                <div className={styles.settingSection}>
-                                    <h3>Theme</h3>
-                                    <Form.Item
-                                        label="Primary Color"
-                                        name="primaryColor"
-                                        initialValue={primaryColor}
-                                    >
-                                        <ColorPicker
-                                            format="hex"
-                                            showText
-                                            value={primaryColor}
-                                            onChange={(color, hex) => {
-                                                const hexColor = color.toHexString();
-                                                console.log(hexColor, "hexColor");
-                                                setPrimaryColor(hexColor);
-                                                form.setFieldValue('primaryColor', hexColor);
-                                            }}
-                                            presets={[
-                                                {
-                                                    label: 'Recommended',
-                                                    colors: [
-                                                        '#1a3a6c', '#000000', '#2b6989', '#3a5998',
-                                                        '#71c5fb', '#b8daff', '#843c39', '#ff9b9b',
-                                                        '#ffd5d1', '#d9d9d9', '#e6e6e6'
-                                                    ],
-                                                },
-                                            ]}
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Logo"
-                                        name="logo"
-                                    >
-                                        <div className={styles.logoUpload}>
-                                            <label htmlFor="einvoice-logo-upload" className={styles.uploadButton}>
-                                                Upload Logo
-                                            </label>
-                                            <input
-                                                id="einvoice-logo-upload"
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleLogoUpload}
-                                                className={styles.fileInput}
-                                                style={{ display: 'none' }}
-                                            />
-                                            <div className={styles.logoPreview}>
-                                                {logoPreview ? (
-                                                    <img
-                                                        src={logoPreview.startsWith('data') ? logoPreview : `/api/${logoPreview}`}
-                                                        alt="E-invoice logo"
-                                                        className={styles.logoImage}
-                                                    />
-                                                ) : (
-                                                    <div className={styles.emptyLogo} />
-                                                )}
-                                            </div>
-                                        </div>
-                                    </Form.Item>
-                                </div>
-                            </TabPane>
-
-                            {/* Server Settings Tab */}
-                            <TabPane tab="Server Settings" key="serverSettings" forceRender={true}>
-                                <div className={styles.settingSection}>
-                                    <h3>ERP Server Settings</h3>
-                                    <Form.Item
-                                        label="Server Base API"
-                                        name="serverBaseAPI"
-                                        rules={[{ required: true, message: 'Please enter the server base API' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Company ID"
-                                        name="companyID"
-                                        rules={[{ required: true, message: 'Please enter the company ID' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="User Account"
-                                        name="userAccount"
-                                        rules={[{ required: true, message: 'Please enter the user account' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Password"
-                                        name="password"
-                                        rules={[{ required: true, message: 'Please enter the password' }]}
-                                    >
-                                        <Input.Password />
-                                    </Form.Item>
-
-
-                                </div>
-
-                                <div className={styles.settingSection}>
-                                    <h3>Tax Agency Settings</h3>
-                                    <Form.Item
-                                        label="Connector"
-                                        name="connector"
-                                        rules={[{ required: true, message: 'Please select a connector' }]}
-                                    >
-                                        <Select>
-                                            <Option value="CN - BW">CN - BW</Option>
-                                            <Option value="ML - Manual">ML - Manual</Option>
-                                        </Select>
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="APP KEY"
-                                        name="appKey"
-                                        rules={[{ required: true, message: 'Please enter the APP KEY' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="APP SECRET"
-                                        name="appSecret"
-                                        rules={[{ required: true, message: 'Please enter the APP SECRET' }]}
-                                    >
-                                        <Input.Password />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Salt Value"
-                                        name="salt"
-                                        tooltip="Optional salt value used for password encryption"
-                                    >
-                                        <Input placeholder="Enter salt value for password encryption" />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="TOKEN"
-                                        name="token"
-                                        rules={[{ required: true, message: 'Please get the TOKEN first' }]}
-                                    >
-                                        <Input.Password
-
-                                            placeholder="Read only"
-                                            addonAfter={
-                                                <Button
-                                                    type="link"
-                                                    size="small"
-                                                    onClick={handleRequestAuthentication}
-                                                    style={{ margin: -7 }}
-                                                >
-                                                    Get Token
-                                                </Button>
-                                            }
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="User Account"
-                                        name="taxUserAccount"
-                                        rules={[{ required: true, message: 'Please enter the user account' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Password"
-                                        name="taxPassword"
-                                        rules={[{ required: true, message: 'Please enter the password' }]}
-                                    >
-                                        <Input.Password />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="BASE URL"
-                                        name="baseURL"
-                                        rules={[{ required: true, message: 'Please enter the BASE URL' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Version"
-                                        name="version"
-                                        rules={[{ required: true, message: 'Please enter the version' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                </div>
-                            </TabPane>
-
-                            {/* Process Tab */}
-                            <TabPane tab="Process" key="process" forceRender={true}>
-                                <div className={styles.settingSection}>
-                                    <h3>Schedule</h3>
-                                    <Form.Item
-                                        label="Activate email Notifications"
-                                        name="activateEmailNotifications"
-                                        valuePropName="checked"
-                                    >
-                                        <Switch />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Schedule"
-                                        name="schedule"
-                                        rules={[{ required: true, message: 'Please select a schedule' }]}
-                                    >
-                                        <Select>
-                                            <Option value="Weekly">Weekly</Option>
-                                            <Option value="Monthly">Monthly</Option>
-                                            <Option value="Daily">Daily</Option>
-                                        </Select>
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Day"
-                                        name="day"
-                                        rules={[{ required: true, message: 'Please select a day' }]}
-                                    >
-                                        <Select>
-                                            <Option value="Monday">Monday</Option>
-                                            <Option value="Tuesday">Tuesday</Option>
-                                            <Option value="Wednesday">Wednesday</Option>
-                                            <Option value="Thursday">Thursday</Option>
-                                            <Option value="Friday">Friday</Option>
-                                            <Option value="Saturday">Saturday</Option>
-                                            <Option value="Sunday">Sunday</Option>
-                                        </Select>
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Time"
-                                        name="time"
-                                        rules={[{ required: true, message: 'Please select a time' }]}
-                                    >
-                                        <TimePicker format="HH:mm" />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Email Addresses"
-                                        name="emailAddresses"
-                                        rules={[{ required: true, message: 'Please enter email addresses' }]}
-                                    >
-                                        <Input placeholder="Comma-separated email addresses" />
-                                    </Form.Item>
-                                </div>
-                            </TabPane>
-
-                            {/* Authentication Tab */}
-                            <TabPane tab="Authentication" key="authentication" forceRender={true}>
-                                {/* <div className={styles.settingSection}>
-                                    <h3>Tax Agency</h3>
-                                    <Button
-                                        type="primary"
-                                        onClick={handleRequestAuthentication}
-                                    >
-                                        Request Authentication
-                                    </Button>
-                                </div> */}
-                                <div style={{ marginTop: 24, padding: 16, border: '1px solid #eee', borderRadius: 8 }}>
-                                    <h3>认证流程</h3>
-                                    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-                                        <Button type="primary" loading={loginLoading} onClick={handleDemoLogin}>
-                                            数电账号登录
-                                        </Button>
-                                        <span>登录状态：<b>{loginStatus}</b></span>
-                                        <Button type="primary" loading={certifyLoading} onClick={handleDemoCertify}>
-                                            实人认证
-                                        </Button>
-                                        <span>认证状态：<b>{certifyStatus}</b></span>
-                                    </div>
-                                </div>
-                            </TabPane>
-
-                            {/* Company Information Tab */}
-                            <TabPane tab="Company Information" key="companyInfo" forceRender={true}>
-                                <div className={styles.settingSection}>
-                                    <h3>My Company</h3>
-                                    <Form.Item
-                                        label="Company Name"
-                                        name="companyName"
-                                        rules={[{ required: true, message: 'Please enter your company name' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Tax No"
-                                        name="taxNo"
-                                        rules={[{ required: true, message: 'Please enter your tax number' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Drawer"
-                                        name="drawer"
-                                        rules={[{ required: true, message: 'Please enter the drawer' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Address"
-                                        name="address"
-                                        rules={[{ required: true, message: 'Please enter your address' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Tel"
-                                        name="tel"
-                                        rules={[{ required: true, message: 'Please enter your telephone' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Bank Name"
-                                        name="bankName"
-                                        rules={[{ required: true, message: 'Please enter your bank name' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        label="Bank Account"
-                                        name="bankAccount"
-                                        rules={[{ required: true, message: 'Please enter your bank account' }]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                </div>
-                            </TabPane>
-                        </Tabs>
-
-                        <div className={styles.actionButtons}>
-                            <Button
-                                type="primary"
-                                icon={<SaveOutlined />}
-                                onClick={handleSave}
-                                size="large"
-                                loading={saving || uploading}
-                                disabled={uploading}
+                            <Tabs
+                                activeKey={activeTab}
+                                onChange={setActiveTab}
+                                tabPosition="left"
+                                className={styles.settingsTabs}
+                                destroyInactiveTabPane={false}
                             >
-                                {saving ? 'Saving...' : uploading ? 'Uploading...' : 'Save Settings'}
-                            </Button>
-                        </div>
-                    </Form>
+                                {/* Look & Feel Tab */}
+                                <TabPane tab="Look & Feel" key="lookAndFeel" forceRender={true}>
+                                    <div className={styles.settingSection}>
+                                        <h3 style={{ textAlign: 'left' }}>Theme</h3>
+                                        <Form.Item
+                                            label="Primary Color"
+                                            name="primaryColor"
+                                            initialValue={primaryColor}
+                                        >
+                                            <ColorPicker
+                                                format="hex"
+                                                showText
+                                                value={primaryColor}
+                                                onChange={handleColorChange}
+                                                presets={[
+                                                    {
+                                                        label: 'Recommended',
+                                                        colors: [
+                                                            '#1a3a6c', '#000000', '#2b6989', '#3a5998',
+                                                            '#71c5fb', '#b8daff', '#843c39', '#ff9b9b',
+                                                            '#ffd5d1', '#d9d9d9', '#e6e6e6'
+                                                        ],
+                                                    },
+                                                ]}
+                                            />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Logo"
+                                            name="logo"
+                                        >
+                                            <div className={styles.logoUpload}>
+                                                <label htmlFor="einvoice-logo-upload" className={styles.uploadButton}>
+                                                    Upload Logo
+                                                </label>
+                                                <input
+                                                    id="einvoice-logo-upload"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleLogoUpload}
+                                                    className={styles.fileInput}
+                                                    style={{ display: 'none' }}
+                                                />
+                                                <div className={styles.logoPreview}>
+                                                    {logoPreview ? (
+                                                        <img
+                                                            src={logoPreview.startsWith('data') ? logoPreview : `/api/${logoPreview}`}
+                                                            alt="E-invoice logo"
+                                                            className={styles.logoImage}
+                                                        />
+                                                    ) : (
+                                                        <div className={styles.emptyLogo} />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </Form.Item>
+                                    </div>
+                                </TabPane>
+
+                                {/* Server Settings Tab */}
+                                <TabPane tab="Server Settings" key="serverSettings" forceRender={true}>
+                                    <div className={styles.settingSection}>
+                                        <h3 style={{ textAlign: 'left' }}>ERP Server Settings</h3>
+                                        <Form.Item
+                                            label="Server Base API"
+                                            name="serverBaseAPI"
+                                            rules={[{ required: true, message: 'Please enter the server base API' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Company ID"
+                                            name="companyID"
+                                            rules={[{ required: true, message: 'Please enter the company ID' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="User Account"
+                                            name="userAccount"
+                                            rules={[{ required: true, message: 'Please enter the user account' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Password"
+                                            name="password"
+                                            rules={[{ required: true, message: 'Please enter the password' }]}
+                                        >
+                                            <Input.Password />
+                                        </Form.Item>
+
+
+                                    </div>
+
+                                    <div className={styles.settingSection}>
+                                        <h3 style={{ textAlign: 'left' }}>Tax Agency Settings</h3>
+                                        <Form.Item
+                                            label="Connector"
+                                            name="connector"
+                                            rules={[{ required: true, message: 'Please select a connector' }]}
+                                        >
+                                            <Select>
+                                                <Option value="CN - BW">CN - BW</Option>
+                                                <Option value="ML - Manual">ML - Manual</Option>
+                                            </Select>
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="APP KEY"
+                                            name="appKey"
+                                            rules={[{ required: true, message: 'Please enter the APP KEY' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="APP SECRET"
+                                            name="appSecret"
+                                            rules={[{ required: true, message: 'Please enter the APP SECRET' }]}
+                                        >
+                                            <Input.Password />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Salt Value"
+                                            name="salt"
+                                            tooltip="Optional salt value used for password encryption"
+                                        >
+                                            <Input placeholder="Enter salt value for password encryption" />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="TOKEN"
+                                            name="token"
+                                            rules={[{ required: true, message: 'Please get the TOKEN first' }]}
+                                        >
+                                            <Input.Password
+
+                                                placeholder="Read only"
+                                                addonAfter={
+                                                    <Button
+                                                        type="link"
+                                                        size="small"
+                                                        onClick={handleRequestAuthentication}
+                                                        style={{ margin: -7 }}
+                                                    >
+                                                        Get Token
+                                                    </Button>
+                                                }
+                                            />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="User Account"
+                                            name="taxUserAccount"
+                                            rules={[{ required: true, message: 'Please enter the user account' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Password"
+                                            name="taxPassword"
+                                            rules={[{ required: true, message: 'Please enter the password' }]}
+                                        >
+                                            <Input.Password />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="BASE URL"
+                                            name="baseURL"
+                                            rules={[{ required: true, message: 'Please enter the BASE URL' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Version"
+                                            name="version"
+                                            rules={[{ required: true, message: 'Please enter the version' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                    </div>
+                                </TabPane>
+
+                                {/* Process Tab */}
+                                <TabPane tab="Process" key="process" forceRender={true}>
+                                    <div className={styles.settingSection}>
+                                        <h3 style={{ textAlign: 'left' }}>Schedule</h3>
+                                        <Form.Item
+                                            label="Activate email Notifications"
+                                            name="activateEmailNotifications"
+                                            valuePropName="checked"
+                                        >
+                                            <Switch />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Schedule"
+                                            name="schedule"
+                                            rules={[{ required: true, message: 'Please select a schedule' }]}
+                                        >
+                                            <Select>
+                                                <Option value="Weekly">Weekly</Option>
+                                                <Option value="Monthly">Monthly</Option>
+                                                <Option value="Daily">Daily</Option>
+                                            </Select>
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Day"
+                                            name="day"
+                                            rules={[{ required: true, message: 'Please select a day' }]}
+                                        >
+                                            <Select>
+                                                <Option value="Monday">Monday</Option>
+                                                <Option value="Tuesday">Tuesday</Option>
+                                                <Option value="Wednesday">Wednesday</Option>
+                                                <Option value="Thursday">Thursday</Option>
+                                                <Option value="Friday">Friday</Option>
+                                                <Option value="Saturday">Saturday</Option>
+                                                <Option value="Sunday">Sunday</Option>
+                                            </Select>
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Time"
+                                            name="time"
+                                            rules={[{ required: true, message: 'Please select a time' }]}
+                                        >
+                                            <TimePicker format="HH:mm" />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Email Addresses"
+                                            name="emailAddresses"
+                                            rules={[{ required: true, message: 'Please enter email addresses' }]}
+                                        >
+                                            <Input placeholder="Comma-separated email addresses" />
+                                        </Form.Item>
+                                    </div>
+                                </TabPane>
+
+                                {/* Authentication Tab */}
+                                <TabPane tab="Authentication" key="authentication" forceRender={true}>
+                                    <div style={{ marginTop: 24, padding: 16, border: '1px solid #eee', borderRadius: 8 }}>
+                                        <h3 style={{ textAlign: 'left' }}>认证流程</h3>
+                                        <div style={{ display: 'flex', gap: 24, alignItems: 'center', marginTop: 16 }}>
+                                            <Button type="primary" loading={loginLoading} onClick={handleDemoLogin}>
+                                                数电账号登录
+                                            </Button>
+                                            <span>登录状态：<b>{loginStatus}</b></span>
+                                            <Button type="primary" loading={certifyLoading} onClick={handleDemoCertify}>
+                                                实人认证
+                                            </Button>
+                                            <span>认证状态：<b>{certifyStatus}</b></span>
+                                        </div>
+                                    </div>
+                                </TabPane>
+
+                                {/* Company Information Tab */}
+                                <TabPane tab="Company Information" key="companyInfo" forceRender={true}>
+                                    <div className={styles.settingSection}>
+                                        <h3 style={{ textAlign: 'left' }}>My Company</h3>
+                                        <Form.Item
+                                            label="Company Name"
+                                            name="companyName"
+                                            rules={[{ required: true, message: 'Please enter your company name' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Tax No"
+                                            name="taxNo"
+                                            rules={[{ required: true, message: 'Please enter your tax number' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Drawer"
+                                            name="drawer"
+                                            rules={[{ required: true, message: 'Please enter the drawer' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Address"
+                                            name="address"
+                                            rules={[{ required: true, message: 'Please enter your address' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Tel"
+                                            name="tel"
+                                            rules={[{ required: true, message: 'Please enter your telephone' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Bank Name"
+                                            name="bankName"
+                                            rules={[{ required: true, message: 'Please enter your bank name' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Bank Account"
+                                            name="bankAccount"
+                                            rules={[{ required: true, message: 'Please enter your bank account' }]}
+                                        >
+                                            <Input />
+                                        </Form.Item>
+                                    </div>
+                                </TabPane>
+                            </Tabs>
+
+                            <div className={styles.actionButtons} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                <Button
+                                    type="primary"
+                                    icon={<SaveOutlined />}
+                                    onClick={handleSave}
+                                    size="large"
+                                    loading={saving || uploading}
+                                    disabled={uploading}
+                                >
+                                    {saving ? 'Saving...' : uploading ? 'Uploading...' : 'Save Settings'}
+                                </Button>
+                            </div>
+                        </Form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </ConfigProvider>
     );
 };
 
