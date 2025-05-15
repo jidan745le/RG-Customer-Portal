@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import apiClient from '../../utils/apiClient';
+import React, { useEffect, useState } from 'react';
 import styles from '../../styles/dashboard/YourApps.module.css';
+import apiClient from '../../utils/apiClient';
+import Logo from '../Logo';
 
 // 简单的SVG占位符图标
 const PlaceholderIcon = () => (
@@ -73,7 +74,8 @@ const YourApps = () => {
                                 title={app.description || app.name} // 添加描述作为title
                             >
                                 <div className={styles.appIcon}>
-                                    {app.iconUrl ? <img src={app.iconUrl} alt={`${app.name} icon`} /> : <PlaceholderIcon />}
+                                    {app.iconUrl ? <img src={app.iconUrl} alt={`${app.name} icon`} /> : <Logo />
+                                    }
                                 </div>
                                 <div className={styles.appDetails}>
                                     <h3 className={styles.appName}>{app.name}</h3>
