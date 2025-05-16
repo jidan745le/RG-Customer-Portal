@@ -15,6 +15,7 @@ import DashboardPage from './pages/DashboardPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import LoginPage from './pages/LoginPage';
 import MarketplacePage from './pages/MarketplacePage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import SignUpPage from './pages/SignUpPage';
 
 const App = () => {
@@ -37,6 +38,7 @@ const App = () => {
       {!token && (
         <Route element={<PublicLayout />}>
           <Route path="/marketplace" element={<MarketplacePage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
         </Route>
       )}
 
@@ -46,6 +48,7 @@ const App = () => {
           <Route path="/dashboard" element={<DashboardPage />} />
           {/* 登录用户的Marketplace路由 */}
           <Route path="/marketplace" element={<MarketplacePage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/administration" element={<AdminLayout />}>
             <Route path="" element={<Navigate to="/administration/basic" replace />} />
             <Route path="basic" element={<BasicSettingsPage title="Look & Feel" />} />

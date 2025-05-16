@@ -132,15 +132,14 @@
 
 .productGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
 }
 
 /* FAQ Section */
 .faqSection {
   max-width: 100%;
-  margin: 3rem auto;
-  padding: 0 2rem;
+  margin: 3rem 0;
 }
 
 .faqTitle {
@@ -252,10 +251,37 @@
   .sidebarFilters {
     width: 100%;
   }
+  
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
   .productGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.loadingMessage,
+.errorMessage,
+.emptyMessage {
+  padding: 2rem;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.loadingMessage {
+  color: #666;
+}
+
+.errorMessage {
+  color: #e53935;
+  background-color: #ffebee;
+}
+
+.emptyMessage {
+  color: #666;
 } 

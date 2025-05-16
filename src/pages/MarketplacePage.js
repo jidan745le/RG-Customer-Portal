@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FAQItem from '../components/marketplace/FAQItem';
 import ProductCard from '../components/marketplace/ProductCard';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/MarketplacePage.module.css';
+import apiClient from '../utils/apiClient';
+
 
 const MarketplacePage = () => {
     // Get user authentication status
@@ -16,6 +18,28 @@ const MarketplacePage = () => {
         type: [],
         offering: []
     });
+
+    const [zohoProducts, setZohoProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchZohoProducts = async () => {
+            try {
+                setLoading(true);
+                const response = await apiClient.get('/zoho/products');
+                setZohoProducts(response.data);
+                setError(null);
+            } catch (err) {
+                console.error('Failed to fetch Zoho products:', err);
+                setError('Failed to load products from Zoho.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchZohoProducts();
+    }, []);
 
     const handleFilterChange = (category, value) => {
         setFilters(prev => {
@@ -124,7 +148,7 @@ const MarketplacePage = () => {
                 </div>
             </section>
 
-            <section className={styles.marketplaceContent}>
+            {!loading && <section className={styles.marketplaceContent}>
                 <div className={styles.sidebarFilters}>
                     <h3 className={styles.filterTitle}>Filters</h3>
 
@@ -242,7 +266,7 @@ const MarketplacePage = () => {
                 </div>
 
                 <div className={styles.productListing}>
-                    <h3 className={styles.productListingTitle}>Featured Products</h3>
+                    {/* <h3 className={styles.productListingTitle}>Featured Products</h3>
 
                     <div className={styles.productGrid}>
                         {products.map(product => (
@@ -254,21 +278,52 @@ const MarketplacePage = () => {
                                 price={product.price}
                             />
                         ))}
-                    </div>
+                    </div> */}
+
+                    {/* Zoho Products Section */}
+                    <h3 className={styles.productListingTitle} >Featured Products</h3>
+
+                    {loading && <div className={styles.loadingMessage}>Loading products from Zoho...</div>}
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+
+                    {!loading && !error && zohoProducts.length > 0 && (
+                        <div className={styles.productGrid}>
+                            {zohoProducts.map(product => (
+                                <ProductCard
+                                    vendor={product?.Vendor_Name?.name}
+                                    key={product?.id}
+                                    id={product?.id}
+                                    name={product?.Product_Name}
+                                    logo={`/api/zoho/products/${product?.id}/image`}
+                                    description={product?.Description || 'No description available'}
+                                    price={product?.Pricing || 'No pricing available'}
+                                />
+                            ))}
+                        </div>
+                    )}
+
+                    {!loading && !error && zohoProducts.length === 0 && (
+                        <div className={styles.emptyMessage}>No products available from Zoho.</div>
+                    )}
+
+                    <section className={styles.faqSection}>
+                        <h3 className={styles.faqTitle}>Frequently Asked Questions</h3>
+                        {faqItems.map((item, index) => (
+                            <FAQItem
+                                key={index}
+                                question={item.question}
+                                answer={item.answer}
+                            />
+                        ))}
+                    </section>
                 </div>
-            </section>
+            </section>}
+            {
+                loading && <div className={styles.loadingMessage}>Loading products</div>
+            }
 
             {/* 只有登录用户才显示FAQ部分 */}
-            <section className={styles.faqSection}>
-                <h3 className={styles.faqTitle}>Frequently Asked Questions</h3>
-                {faqItems.map((item, index) => (
-                    <FAQItem
-                        key={index}
-                        question={item.question}
-                        answer={item.answer}
-                    />
-                ))}
-            </section>
+
         </>
     );
 };

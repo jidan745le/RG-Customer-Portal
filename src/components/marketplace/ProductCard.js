@@ -1,24 +1,46 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import logoImage from '../../assets/images/Logo.png';
 import styles from '../../styles/marketplace/ProductCard.module.css';
 
-const ProductCard = ({ name, logo, description, price }) => {
+const ProductCard = ({ name, logo, description, price, vendor, id }) => {
+    const navigate = useNavigate();
+
+    const handleViewDetails = () => {
+        navigate(`/product/${id}`);
+    };
 
     return (
         <div className={`${styles.card}`}>
-            <div className={styles.cardHeader}>
-                <div className={styles.logoContainer}>
-                    <img src={logo} alt={name} className={styles.logo} />
-                </div>
-                <div className={styles.headerInfo}>
-                    <span className={styles.appLabel}>DeepL App</span>
-                    <span className={`${styles.priceLabel} ${price === 'FREE' ? styles.free : styles.paid}`}>{price}</span>
-                </div>
+            <div className={styles.logoSection}>
+                <img src={logo} alt={name} className={styles.logo} onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = logoImage;
+                }} />
             </div>
-            <div className={styles.cardBody}>
-                <p className={styles.description}>{description}</p>
-            </div>
-            <div className={styles.cardFooter}>
-                <button className={styles.learnMoreButton}>Learn More</button>
+
+            <div className={styles.contentSection}>
+                <div className={styles.cardHeader}>
+                    <h3 className={styles.productName}>{name}</h3>
+                    <span className={styles.price}>{price}</span>
+                </div>
+
+                <div className={styles.vendor}>
+                    By {vendor || 'Unknown'}
+                </div>
+
+                <div className={styles.cardBody}>
+                    <p className={styles.description}>{description}</p>
+                </div>
+
+                <div className={styles.cardFooter}>
+                    <button
+                        className={styles.learnMoreButton}
+                        onClick={handleViewDetails}
+                    >
+                        Learn More
+                    </button>
+                </div>
             </div>
         </div>
     );
