@@ -8,7 +8,6 @@ import { useAuth } from './context/AuthContext';
 import {
   BasicSettingsPage,
   ContentManagementPage,
-  EInvoiceSettingsPage,
   NotificationsPage,
   UserManagementPage
 } from './pages/administration';
@@ -54,7 +53,7 @@ const App = () => {
             <Route path="content" element={<ContentManagementPage title="Content Management" />} />
             <Route path="notifications" element={<NotificationsPage title="Notifications" />} />
           </Route>
-          <Route path="/administration/einvoice" element={<EInvoiceSettingsPage title="E-Invoice Settings" />} />
+          {/* <Route path="/administration/einvoice" element={<EInvoiceSettingsPage title="E-Invoice Settings" />} /> */}
         </Route>
 
         {/* Administration routes with AdminLayout */}

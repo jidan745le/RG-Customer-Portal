@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import styles from '../styles/LoginForm.module.css';
 import { useAuth } from '../context/AuthContext';
+import styles from '../styles/LoginForm.module.css';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ const LoginForm = () => {
 
   return (
     <div className={styles.formContainer}>
-      <div className={styles.welcomeText}>
+      <div className={styles.welcomeText} style={{ width: '100%' }}>
         <p>Welcome to the</p>
         <h1>RG Customer Portal</h1>
       </div>
