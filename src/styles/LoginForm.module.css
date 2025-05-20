@@ -67,6 +67,16 @@
   border-color: #999;
 }
 
+/* 错误状态的输入框样式 */
+.inputGroup input.inputError {
+  border-color: #e53935;
+  background-color: #ffebee;
+}
+
+.inputGroup input.inputError:focus {
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
+}
+
 .formOptions {
   display: flex;
   justify-content: space-between;

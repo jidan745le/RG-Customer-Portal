@@ -1,13 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import apiClient from '../utils/apiClient';
+import CookieService from '../utils/cookieService';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('authToken'));
-    const [loading, setLoading] = useState(true); // 添加加载状态
+    const [token, setToken] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [returnUrl, setReturnUrl] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -22,25 +24,22 @@ export const AuthProvider = ({ children }) => {
     }, [location]);
 
     useEffect(() => {
-        const storedToken = localStorage.getItem('authToken');
-        const storedUser = localStorage.getItem('userInfo');
+        // 从cookie中检查认证状态
+        const storedToken = CookieService.getToken();
+        const userInfo = CookieService.getUserInfo();
 
-        if (storedToken && storedUser) {
+        if (storedToken) {
             setToken(storedToken);
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (e) {
-                console.error("Failed to parse user info from localStorage", e);
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('userInfo');
-                setToken(null);
-                setUser(null);
+            setIsAuthenticated(true);
+            if (userInfo) {
+                setUser(userInfo);
             }
         } else {
-            // 如果没有token或用户信息，确保状态被清空
             setToken(null);
+            setIsAuthenticated(false);
             setUser(null);
         }
+
         setLoading(false);
     }, []);
 
@@ -50,38 +49,51 @@ export const AuthProvider = ({ children }) => {
             const response = await apiClient.post('/login', credentials);
             const { token: newToken, user: userData } = response.data;
 
-            localStorage.setItem('authToken', newToken);
-            localStorage.setItem('userInfo', JSON.stringify(userData));
+            // 使用CookieService保存token和用户信息
+            CookieService.setToken(newToken);
+            CookieService.setUserInfo(userData);
+
+            // 更新状态
             setToken(newToken);
+            setIsAuthenticated(true);
             setUser(userData);
             setLoading(false);
 
-            // Handle redirection based on returnUrl
+            // 处理登录成功后的重定向
             if (returnUrl) {
                 setTimeout(() => {
                     window.location.href = returnUrl;
                 });
             } else {
-                navigate('/dashboard');
+                console.log('Navigating to dashboard...');
+                // 增加延迟确保状态更新后再跳转
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 100);
             }
+            return true;
         } catch (error) {
             setLoading(false);
             console.error('Login failed:', error);
-            // 可以在这里处理登录失败的UI提示
             throw error; // 将错误抛出，以便在LoginForm中捕获
         }
     };
 
     const logout = () => {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userInfo');
+        // 使用CookieService清除认证信息
+        CookieService.logout();
+
+        // 重置状态
         setToken(null);
+        setIsAuthenticated(false);
         setUser(null);
-        navigate('/'); // 登出后跳转回登录页
+
+        // 跳转至登录页
+        navigate('/');
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, isAuthenticated, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

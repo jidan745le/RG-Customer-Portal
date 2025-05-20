@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from '../styles/LoginForm.module.css';
+import CookieService from '../utils/cookieService';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -15,12 +16,47 @@ const LoginForm = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
     try {
+      // 调用login方法，传入登录凭据
       await login({ email, password });
+
+      // 如果用户选择"记住我"，将Cookie有效期延长到30天
+      if (rememberMe) {
+        // 获取当前token并重新设置为30天有效期
+        const token = CookieService.getToken();
+        if (token) {
+          CookieService.setCookie(CookieService.TOKEN_KEY, token, {
+            maxAge: 60 * 60 * 24 * 30 // 30天
+          });
+
+          // 用户信息也同样延长
+          const userInfo = CookieService.getUserInfo();
+          if (userInfo) {
+            CookieService.setCookie(
+              CookieService.USER_INFO_KEY,
+              JSON.stringify(userInfo),
+              { maxAge: 60 * 60 * 24 * 30 }
+            );
+          }
+        }
+      }
     } catch (err) {
-      setError(err.response?.data?.message || '登录失败，请稍后重试');
+      setError(err.response?.data?.message || '登录失败，请检查邮箱和密码');
       setLoading(false);
     }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    // 清除可能存在的错误提示
+    if (error) setError(null);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    // 清除可能存在的错误提示
+    if (error) setError(null);
   };
 
   return (
@@ -43,8 +79,11 @@ const LoginForm = () => {
             type="email"
             placeholder="Email Address"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             required
+            autoComplete="email"
+            minLength={5}
+            className={error ? styles.inputError : ''}
           />
         </div>
 
@@ -58,8 +97,11 @@ const LoginForm = () => {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             required
+            autoComplete="current-password"
+            minLength={6}
+            className={error ? styles.inputError : ''}
           />
         </div>
 
@@ -70,7 +112,6 @@ const LoginForm = () => {
               id="rememberMe"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              disabled
             />
             <label htmlFor="rememberMe">Keep me logged in</label>
           </div>

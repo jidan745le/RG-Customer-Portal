@@ -1,4 +1,5 @@
 import axios from 'axios';
+import CookieService from './cookieService';
 
 // 创建axios实例
 const apiClient = axios.create({
@@ -6,12 +7,15 @@ const apiClient = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    // 确保跨域请求时携带cookie
+    withCredentials: true
 });
 
 // 请求拦截器 - 自动添加JWT Token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('authToken');
+        // 从cookie中获取token
+        const token = CookieService.getToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -29,10 +33,9 @@ apiClient.interceptors.response.use(
     },
     (error) => {
         if (error.response && error.response.status === 401) {
-            // 处理未授权错误，例如重定向到登录页
+            // 处理未授权错误，使用CookieService清除认证信息
             console.error('认证失败，请重新登录。');
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('userInfo');
+            CookieService.logout();
             // 可以添加重定向逻辑 window.location.href = '/login';
         } else {
             console.error('API请求出错:', error.response?.data || error.message);

@@ -19,7 +19,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import SignUpPage from './pages/SignUpPage';
 
 const App = () => {
-  const { token, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return <div>Application Loading...</div>;
@@ -31,11 +31,11 @@ const App = () => {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route
         path="/"
-        element={token ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />}
       />
 
       {/* 公共可访问的Marketplace路由（仅非登录用户访问） */}
-      {!token && (
+      {!isAuthenticated && (
         <Route element={<PublicLayout />}>
           <Route path="/marketplace" element={<MarketplacePage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
@@ -63,7 +63,7 @@ const App = () => {
 
       </Route>
 
-      <Route path="*" element={<Navigate to={token ? "/dashboard" : "/"} replace />} />
+      <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />} />
     </Routes>
   );
 };
