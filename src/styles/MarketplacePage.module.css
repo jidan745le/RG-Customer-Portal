@@ -78,7 +78,7 @@
 /* Marketplace Content Section */
 .marketplaceContent {
   display: flex;
-  max-width: 1400px;
+  width: 1400px;
   margin: 2rem auto;
   padding: 0 2rem;
   gap: 2rem;

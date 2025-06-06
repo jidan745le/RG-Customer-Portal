@@ -1,3 +1,5 @@
+import { Carousel } from 'antd';
+import 'antd/dist/reset.css';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import styles from '../styles/ProductDetailPage.module.css';
@@ -9,6 +11,10 @@ const ProductDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('overview');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [currentModalImage, setCurrentModalImage] = useState(null);
+    const [currentModalIndex, setCurrentModalIndex] = useState(0);
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -29,6 +35,54 @@ const ProductDetailPage = () => {
             fetchProductDetails();
         }
     }, [id]);
+
+    const nextImage = () => {
+        if (product?.Teaser_Images && product.Teaser_Images.length > 0) {
+            setCurrentImageIndex((prev) =>
+                prev === product.Teaser_Images.length - 1 ? 0 : prev + 1
+            );
+        }
+    };
+
+    const prevImage = () => {
+        if (product?.Teaser_Images && product.Teaser_Images.length > 0) {
+            setCurrentImageIndex((prev) =>
+                prev === 0 ? product.Teaser_Images.length - 1 : prev - 1
+            );
+        }
+    };
+
+    const goToImage = (index) => {
+        setCurrentImageIndex(index);
+    };
+
+    // Modal functions for screenshot viewing
+    const openModal = (screenshot, index) => {
+        setCurrentModalImage(screenshot);
+        setCurrentModalIndex(index);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setCurrentModalImage(null);
+    };
+
+    const nextModalImage = () => {
+        if (product?.App_Screenshots && product.App_Screenshots.length > 0) {
+            const nextIndex = currentModalIndex === product.App_Screenshots.length - 1 ? 0 : currentModalIndex + 1;
+            setCurrentModalIndex(nextIndex);
+            setCurrentModalImage(product.App_Screenshots[nextIndex]);
+        }
+    };
+
+    const prevModalImage = () => {
+        if (product?.App_Screenshots && product.App_Screenshots.length > 0) {
+            const prevIndex = currentModalIndex === 0 ? product.App_Screenshots.length - 1 : currentModalIndex - 1;
+            setCurrentModalIndex(prevIndex);
+            setCurrentModalImage(product.App_Screenshots[prevIndex]);
+        }
+    };
 
     if (loading) {
         return <div className={styles.loadingContainer}>Loading product details...</div>;
@@ -101,23 +155,41 @@ const ProductDetailPage = () => {
     return (
         <div className={styles.productDetailContainer}>
             <div className={styles.breadcrumb}>
-                <Link to="/marketplace">Marketplace</Link> &gt; {product.Product_Name}
+                <Link to="/marketplace">Marketplace</Link> &gt; {product.Title_External}
             </div>
 
             <div className={styles.productHeader}>
                 <img style={{ width: '32px', height: '32px' }} src={`/api/zoho/products/${id}/image`} alt={product.Product_Name} className={styles.productImage} />
-                <h1 className={styles.productTitle}>{product.Product_Name}</h1>
+                <h1 className={styles.productTitle}>{product.Title_External}</h1>
             </div>
 
             <div className={styles.productContent}>
                 <div className={styles.mainContent}>
                     <div className={styles.productImageContainer}>
-                        <img
-                            src={`/api/zoho/products/${id}/image`}
-                            alt={product.Product_Name}
-                            className={styles.productImage}
-
-                        />
+                        {product.Teaser_Images && product.Teaser_Images.length > 0 ? (
+                            <Carousel
+                                afterChange={goToImage}
+                                effect="scrollx"
+                                dots={true}
+                                autoplay={true}
+                            >
+                                {product.Teaser_Images.map((image, index) => (
+                                    <div key={index} className={styles.carouselItem}>
+                                        <img
+                                            src={`/api${image.attachment_url}`}
+                                            alt={image.File_Name__s || product.Title_External || 'Product Image'}
+                                            className={styles.productImage}
+                                        />
+                                    </div>
+                                ))}
+                            </Carousel>
+                        ) : (
+                            <img
+                                src={`/api/zoho/products/${id}/image`}
+                                alt={product.Title_External}
+                                className={styles.productImage}
+                            />
+                        )}
                     </div>
                     <div className={styles.tabsContainer}>
                         <div
@@ -149,15 +221,10 @@ const ProductDetailPage = () => {
                     <div className={styles.tabContent}>
                         {activeTab === 'overview' && (
                             <div className={styles.overviewTab}>
-                                <div className={styles.productDescription}>
-                                    <h3>Introduction</h3>
-                                    <p>{product.Description ? product.Description.split('Features')[0].trim() : 'No description available.'}</p>
+                                <h2>Introduction</h2>
 
-                                    {product.Sub_Title && (
-                                        <div className={styles.subTitle}>
-                                            <p>{product.Sub_Title}</p>
-                                        </div>
-                                    )}
+                                <div className={styles.productDescription}>
+                                    <div dangerouslySetInnerHTML={{ __html: product?.Rich_Text_Introduction }}></div>
                                 </div>
                             </div>
                         )}
@@ -165,28 +232,76 @@ const ProductDetailPage = () => {
                         {activeTab === 'documentation' && (
                             <div className={styles.documentationTab}>
                                 <h2>Documentation</h2>
-                                <p>Documentation for this product will be available soon.</p>
+
+                                {/* Product Screenshots & Video Section */}
+                                {/* <div className={styles.documentationSection}>
+                                    <h3>Product Screenshots & Video</h3>
+                                    <p>Link to Video / Screenshots</p>
+                                </div> */}
+
+                                {/* Demo URL Section */}
+                                {product.Demo_URL && (
+                                    <div className={styles.documentationSection}>
+                                        <h3>Demo URL</h3>
+                                        <a href={`https://${product.Demo_URL}`} target="_blank" rel="noopener noreferrer" className={styles.documentationLink}>
+                                            {product.Demo_URL}
+                                        </a>
+                                    </div>
+                                )}
+
+                                {/* Introduction PDF Section */}
+                                {product.Introduction_PDF && (
+                                    <div className={styles.documentationSection}>
+                                        <h3>Introduction PDF</h3>
+                                        <a href={`https://${product.Introduction_PDF}`} target="_blank" rel="noopener noreferrer" className={styles.documentationLink}>
+                                            {product.Introduction_PDF}
+                                        </a>
+                                    </div>
+                                )}
+
+                                {/* App Screenshots Section */}
+                                {product.App_Screenshots && product.App_Screenshots.length > 0 && (
+                                    <div className={styles.documentationSection}>
+                                        <h3>App Screenshots</h3>
+                                        <div className={styles.screenshotsGrid}>
+                                            {product.App_Screenshots.map((screenshot, index) => (
+                                                <div key={index} className={styles.screenshotItem}>
+                                                    <img
+                                                        src={`/api${screenshot.attachment_url}`}
+                                                        alt={screenshot.File_Name__s || `Screenshot ${index + 1}`}
+                                                        className={styles.screenshotImage}
+                                                        onClick={() => openModal(screenshot, index)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    />
+                                                    <p className={styles.screenshotName}>{screenshot.File_Name__s}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
                         {activeTab === 'pricing' && (
                             <div className={styles.pricingTab}>
                                 <h2>Pricing</h2>
-                                <p>Type: {product.Type || 'Not specified'}</p>
-                                <p>Pricing Model: {product.Pricing || 'Contact for pricing details'}</p>
-                                {product.Unit_Price !== undefined && product.Unit_Price !== null && (
-                                    <p>Unit Price: ${product.Unit_Price}</p>
-                                )}
+                                <p>Contact Sales for an individual Quote <a href="mailto:Sales@rg-experience.com">Sales@rg-experience.com</a></p>
                             </div>
                         )}
 
                         {activeTab === 'help' && (
                             <div className={styles.helpTab}>
-                                <h2>Help & Support</h2>
-                                <p>For support regarding this product, please contact the vendor directly.</p>
-                                {product.Owner && product.Owner.email && (
-                                    <p>Contact: <a href={`mailto:${product.Owner.email}`}>{product.Owner.email}</a></p>
-                                )}
+                                <h2>Help</h2>
+                                <p style={{
+                                    lineHeight: "1.6",
+                                    wordWrap: "break-word",
+                                    overflowWrap: "break-word",
+                                    whiteSpace: "normal",
+                                    margin: 0,
+                                    color: "#555"
+                                }}>The KB will be available within the Application. For Detailed Requests please contact
+                                    <a style={{ whiteSpace: "nowrap" }}
+                                        href="mailto:Support@rg-experience.com"> Support@rg-experience.com</a></p>
                             </div>
                         )}
                     </div>
@@ -227,12 +342,12 @@ const ProductDetailPage = () => {
                         </div>
 
                         <div className={styles.vendorDetails}>
-                            <div className={styles.experienceBox}>
+                            {/* <div className={styles.experienceBox}>
                                 <div className={styles.rgLogo}>
                                     <span>rg</span>
                                 </div>
                                 <div className={styles.experienceText}>experience</div>
-                            </div>
+                            </div> */}
 
                             <div className={styles.vendorName}>By {product.Provided_by || product.Vendor_Name?.name || ''}</div>
 
@@ -245,7 +360,119 @@ const ProductDetailPage = () => {
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Modal for screenshot viewing */}
+            {currentModalImage && (
+                <div
+                    className={styles.modal}
+                    style={{
+                        display: modalVisible ? 'flex' : 'none',
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        zIndex: 1000,
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}
+                    onClick={closeModal}
+                >
+                    <div
+                        style={{
+                            position: 'relative',
+                            maxWidth: '90%',
+                            maxHeight: '90%',
+                            backgroundColor: 'white',
+                            borderRadius: '8px',
+                            padding: '20px'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={closeModal}
+                            style={{
+                                position: 'absolute',
+                                top: '10px',
+                                right: '10px',
+                                background: 'none',
+                                border: 'none',
+                                fontSize: '24px',
+                                cursor: 'pointer',
+                                zIndex: 1001
+                            }}
+                        >
+                            ×
+                        </button>
+
+                        {product.App_Screenshots.length > 1 && (
+                            <button
+                                onClick={prevModalImage}
+                                style={{
+                                    position: 'absolute',
+                                    left: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'rgba(0, 0, 0, 0.5)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '40px',
+                                    height: '40px',
+                                    cursor: 'pointer',
+                                    fontSize: '18px'
+                                }}
+                            >
+                                ‹
+                            </button>
+                        )}
+
+                        <img
+                            src={`/api${currentModalImage.attachment_url}`}
+                            alt={currentModalImage.File_Name__s}
+                            style={{
+                                maxWidth: '100%',
+                                maxHeight: '70vh',
+                                objectFit: 'contain'
+                            }}
+                        />
+
+                        {product.App_Screenshots.length > 1 && (
+                            <button
+                                onClick={nextModalImage}
+                                style={{
+                                    position: 'absolute',
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    background: 'rgba(0, 0, 0, 0.5)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '40px',
+                                    height: '40px',
+                                    cursor: 'pointer',
+                                    fontSize: '18px'
+                                }}
+                            >
+                                ›
+                            </button>
+                        )}
+
+                        <p style={{ textAlign: 'center', marginTop: '10px', color: '#666' }}>
+                            {currentModalImage.File_Name__s}
+                        </p>
+
+                        {product.App_Screenshots.length > 1 && (
+                            <p style={{ textAlign: 'center', margin: '5px 0', color: '#999', fontSize: '0.9rem' }}>
+                                {currentModalIndex + 1} / {product.App_Screenshots.length}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div >
     );
 };
 

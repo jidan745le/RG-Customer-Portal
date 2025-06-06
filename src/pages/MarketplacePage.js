@@ -16,7 +16,7 @@ const MarketplacePage = () => {
         vendor: [],
         topic: [],
         type: [],
-        offering: []
+        providedBy: []
     });
 
     const [zohoProducts, setZohoProducts] = useState([]);
@@ -28,6 +28,7 @@ const MarketplacePage = () => {
             try {
                 setLoading(true);
                 const response = await apiClient.get('/zoho/products');
+                console.log('Zoho products data structure:', response.data[0]); // Log the first product to see its structure
                 setZohoProducts(response.data);
                 setError(null);
             } catch (err) {
@@ -40,6 +41,28 @@ const MarketplacePage = () => {
 
         fetchZohoProducts();
     }, []);
+
+    // Filter products based on selected filters
+    const filteredProducts = zohoProducts.filter(product => {
+        // Check if product passes all filter criteria
+        if (filters.vendor.length > 0 &&
+            !filters.vendor.includes(product?.Software_Vendor) &&
+            !filters.vendor.includes(product?.Vendor_Name?.name)) {
+            return false;
+        }
+        if (filters.topic.length > 0 && !filters.topic.includes(product?.Topic)) {
+            return false;
+        }
+        if (filters.type.length > 0 && !filters.type.includes(product?.Type)) {
+            return false;
+        }
+        if (filters.providedBy.length > 0 &&
+            !filters.providedBy.includes(product?.Provided_by) &&
+            !filters.providedBy.includes(product?.Owner?.name)) {
+            return false;
+        }
+        return true;
+    });
 
     const handleFilterChange = (category, value) => {
         setFilters(prev => {
@@ -170,6 +193,46 @@ const MarketplacePage = () => {
                             />
                             Informatica
                         </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.vendor.includes('Microsoft')}
+                                onChange={() => handleFilterChange('vendor', 'Microsoft')}
+                            />
+                            Microsoft
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.vendor.includes('EPICOR')}
+                                onChange={() => handleFilterChange('vendor', 'EPICOR')}
+                            />
+                            EPICOR
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.vendor.includes('AKENEO')}
+                                onChange={() => handleFilterChange('vendor', 'AKENEO')}
+                            />
+                            AKENEO
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.vendor.includes('Contentserv')}
+                                onChange={() => handleFilterChange('vendor', 'Contentserv')}
+                            />
+                            Contentserv
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.vendor.includes('PIMCORE')}
+                                onChange={() => handleFilterChange('vendor', 'PIMCORE')}
+                            />
+                            PIMCORE
+                        </label>
                     </div>
 
                     <div className={styles.filterSection}>
@@ -206,6 +269,58 @@ const MarketplacePage = () => {
                             />
                             Portal
                         </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.topic.includes('eCom')}
+                                onChange={() => handleFilterChange('topic', 'eCom')}
+                            />
+                            eCom
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.topic.includes('Print & more')}
+                                onChange={() => handleFilterChange('topic', 'Print & more')}
+                            />
+                            Print & more
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.topic.includes('Syndication')}
+                                onChange={() => handleFilterChange('topic', 'Syndication')}
+                            />
+                            Syndication
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.topic.includes('AI')}
+                                onChange={() => handleFilterChange('topic', 'AI')}
+                            />
+                            AI
+                        </label>
+                    </div>
+
+                    <div className={styles.filterSection}>
+                        <h4>Owner</h4>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.providedBy.includes('RG Experience')}
+                                onChange={() => handleFilterChange('providedBy', 'RG Experience')}
+                            />
+                            RG Experience
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.providedBy.includes('3rd Party')}
+                                onChange={() => handleFilterChange('providedBy', '3rd Party')}
+                            />
+                            3rd Party
+                        </label>
                     </div>
 
                     <div className={styles.filterSection}>
@@ -213,56 +328,46 @@ const MarketplacePage = () => {
                         <label className={styles.filterOption}>
                             <input
                                 type="checkbox"
-                                checked={filters.type.includes('3rd Partner')}
-                                onChange={() => handleFilterChange('type', '3rd Partner')}
-                            />
-                            3rd Party
-                        </label>
-                        <label className={styles.filterOption}>
-                            <input
-                                type="checkbox"
-                                checked={filters.type.includes('Inc. Experience')}
-                                onChange={() => handleFilterChange('type', 'Inc. Experience')}
-                            />
-                            Inc. Experience
-                        </label>
-                    </div>
-
-                    <div className={styles.filterSection}>
-                        <h4>Offering</h4>
-                        <label className={styles.filterOption}>
-                            <input
-                                type="checkbox"
-                                checked={filters.offering.includes('Data')}
-                                onChange={() => handleFilterChange('offering', 'Data')}
-                            />
-                            Data
-                        </label>
-                        <label className={styles.filterOption}>
-                            <input
-                                type="checkbox"
-                                checked={filters.offering.includes('Service')}
-                                onChange={() => handleFilterChange('offering', 'Service')}
-                            />
-                            Service
-                        </label>
-                        <label className={styles.filterOption}>
-                            <input
-                                type="checkbox"
-                                checked={filters.offering.includes('Accelerator')}
-                                onChange={() => handleFilterChange('offering', 'Accelerator')}
+                                checked={filters.type.includes('Accelerator')}
+                                onChange={() => handleFilterChange('type', 'Accelerator')}
                             />
                             Accelerator
                         </label>
                         <label className={styles.filterOption}>
                             <input
                                 type="checkbox"
-                                checked={filters.offering.includes('Connector')}
-                                onChange={() => handleFilterChange('offering', 'Connector')}
+                                checked={filters.type.includes('SaaS')}
+                                onChange={() => handleFilterChange('type', 'SaaS')}
                             />
-                            Connector
+                            SaaS
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.type.includes('Service')}
+                                onChange={() => handleFilterChange('type', 'Service')}
+                            />
+                            Service
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.type.includes('Data')}
+                                onChange={() => handleFilterChange('type', 'Data')}
+                            />
+                            Data
+                        </label>
+                        <label className={styles.filterOption}>
+                            <input
+                                type="checkbox"
+                                checked={filters.type.includes('API')}
+                                onChange={() => handleFilterChange('type', 'API')}
+                            />
+                            API
                         </label>
                     </div>
+
+
                 </div>
 
                 <div className={styles.productListing}>
@@ -288,18 +393,25 @@ const MarketplacePage = () => {
 
                     {!loading && !error && zohoProducts.length > 0 && (
                         <div className={styles.productGrid}>
-                            {zohoProducts.map(product => (
+                            {filteredProducts.map(product => (
                                 <ProductCard
-                                    vendor={product?.Vendor_Name?.name}
+                                    vendor={product?.Software_Vendor || product?.Vendor_Name?.name}
                                     key={product?.id}
                                     id={product?.id}
-                                    name={product?.Product_Name}
+                                    name={product?.Title_External}
                                     logo={`/api/zoho/products/${product?.id}/image`}
-                                    description={product?.Description || 'No description available'}
+                                    description={product?.Sub_Title || 'No description available'}
                                     price={product?.Pricing || 'No pricing available'}
+                                    topic={product?.Topic}
+                                    type={product?.Type}
+                                    providedBy={product?.Provided_by || product?.Owner?.name}
                                 />
                             ))}
                         </div>
+                    )}
+
+                    {!loading && !error && filteredProducts.length === 0 && zohoProducts.length > 0 && (
+                        <div className={styles.emptyMessage}>No products</div>
                     )}
 
                     {!loading && !error && zohoProducts.length === 0 && (

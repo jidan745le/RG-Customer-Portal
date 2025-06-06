@@ -69,14 +69,14 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     hot: true,
-    port: 8080,
+    port: 8081,
     proxy: {
       '/api': {
-        target: 'http://8.219.189.158:81',
+        target: 'http://localhost:3001',
         changeOrigin: true,
-        // pathRewrite: {
-        //   '^/api': ''
-        // }
+        pathRewrite: (path) => {
+          return path.replace('/api', '')
+        },
       }
     }
   },

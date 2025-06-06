@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import logoImage from '../../assets/images/Logo.png';
 import styles from '../../styles/marketplace/ProductCard.module.css';
 
-const ProductCard = ({ name, logo, description, price, vendor, id }) => {
+const ProductCard = ({ name, logo, description, price, vendor, id, topic, type, providedBy }) => {
     const navigate = useNavigate();
 
     const handleViewDetails = () => {
@@ -26,7 +26,13 @@ const ProductCard = ({ name, logo, description, price, vendor, id }) => {
                 </div>
 
                 <div className={styles.vendor}>
-                    By {vendor || 'Unknown'}
+                    By {vendor || providedBy || 'Unknown'}
+                </div>
+
+                <div className={styles.tagContainer}>
+                    {vendor && <span className={styles.tag}>{vendor}</span>}
+                    {topic && <span className={styles.tag}>{topic}</span>}
+                    {type && <span className={styles.tag}>{type}</span>}
                 </div>
 
                 <div className={styles.cardBody}>

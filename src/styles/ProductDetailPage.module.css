@@ -36,6 +36,10 @@
   gap: 40px;
 }
 
+.productContent h2 {
+  margin-bottom: 24px;
+}
+
 .mainContent {
   width: 800px;
   flex-shrink: 0;
@@ -66,19 +70,51 @@
 }
 
 .productImageContainer {
-  background-color: #f2f2f7;
-  padding: 20px;
-  border-radius: 8px;
+  padding: 0;
+  border-radius: 0;
   margin-bottom: 30px;
-  height: 300px;
+  height: 400px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.productImageContainer :global(.ant-carousel) {
+  width: 100%;
+  height: 400px;
+}
+
+.productImageContainer :global(.ant-carousel .ant-carousel-content) {
+  height: 400px;
+}
+
+.productImageContainer :global(.ant-carousel .slick-slide) {
+  text-align: center;
+  height: 400px;
+  line-height: 400px;
+  background: transparent;
+}
+
+.productImageContainer :global(.ant-carousel .slick-dots) {
+  bottom: 10px;
+}
+
+.carouselItem {
+  height: 400px;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.carouselItem img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
 .productImage {
   max-width: 100%;
-  max-height: 250px;
+  max-height: 400px;
   object-fit: contain;
 }
 
@@ -142,8 +178,8 @@
 }
 
 .featuresList {
-  list-style-type: none;
-  padding: 0;
+  /* list-style-type: none; */
+  padding-left: 16px;
   margin: 0;
 }
 
@@ -225,7 +261,7 @@
 }
 
 .productDescription {
-  margin-top: 30px;
+  margin-top: 0px;
 }
 
 .productDescription h3 {
@@ -235,9 +271,75 @@
 }
 
 .productDescription p {
-  color: #333;
+  margin: 0 0 15px 0;
   line-height: 1.6;
-  margin-bottom: 20px;
+  color: #555;
+}
+
+.documentationSection {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.documentationSection:last-child {
+  border-bottom: none;
+}
+
+.documentationSection h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.documentationLink {
+  color: #0078D4;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.documentationLink:hover {
+  text-decoration: underline;
+}
+
+.screenshotsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.screenshotItem {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+}
+
+.screenshotImage {
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.screenshotImage:hover {
+  transform: scale(1.05);
+}
+
+.screenshotName {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #666;
+  word-break: break-word;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 /* Loading and Error states */
