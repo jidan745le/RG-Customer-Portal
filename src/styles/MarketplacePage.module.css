@@ -273,6 +273,10 @@
   margin: 1rem 0;
 }
 
+.emptyMessage {
+  background-color: white;
+}
+
 .loadingMessage {
   color: #666;
 }

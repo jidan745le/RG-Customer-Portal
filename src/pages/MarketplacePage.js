@@ -411,11 +411,23 @@ const MarketplacePage = () => {
                     )}
 
                     {!loading && !error && filteredProducts.length === 0 && zohoProducts.length > 0 && (
-                        <div className={styles.emptyMessage}>No products</div>
+                        <div className={styles.emptyMessage}>
+                            <div>Exciting Accelerators in the making...</div>
+                            <div style={{ marginTop: '16px', fontWeight: 'bold' }}>STAY TUNED!</div>
+                            <div style={{ marginTop: '16px' }}>
+                                You have some great solutions to share? Submit your extension to Sales@rg-experience.com
+                            </div>
+                        </div>
                     )}
 
                     {!loading && !error && zohoProducts.length === 0 && (
-                        <div className={styles.emptyMessage}>No products available from Zoho.</div>
+                        <div className={styles.emptyMessage}>
+                            <div>Exciting Accelerators in the making...</div>
+                            <div style={{ marginTop: '16px', fontWeight: 'bold' }}>STAY TUNED!</div>
+                            <div style={{ marginTop: '16px' }}>
+                                You have some great solutions to share? Submit your extension to Sales@rg-experience.com
+                            </div>
+                        </div>
                     )}
 
                     <section className={styles.faqSection}>
