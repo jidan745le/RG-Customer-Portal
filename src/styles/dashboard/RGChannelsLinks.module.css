@@ -69,6 +69,10 @@
   background-color: #1877f2; /* Facebook Blue */
 }
 
+.icon-w {
+  background-color: #000000; /* White */
+}
+
 .linkName {
   font-size: 15px;
   font-weight: 500;

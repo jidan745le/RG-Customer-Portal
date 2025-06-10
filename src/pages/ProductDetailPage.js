@@ -150,7 +150,7 @@ const ProductDetailPage = () => {
     const benefits = parseBenefits(product.Benefits);
 
     // 整合所有特性
-    const allFeatures = [...benefits, ...features].filter(f => f);
+    const allFeatures = [...benefits].filter(f => f);
 
     return (
         <div className={styles.productDetailContainer}>

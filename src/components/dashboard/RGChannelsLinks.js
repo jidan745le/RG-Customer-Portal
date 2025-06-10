@@ -3,11 +3,8 @@ import styles from '../../styles/dashboard/RGChannelsLinks.module.css';
 
 // 模拟数据
 const linksData = [
-    { id: 'social', name: 'Social Media Ads', icon: 'AD', url: '#' },
-    { id: 'linkedin', name: 'Dealer LinkedIn', icon: 'in', url: '#' }, // Assuming 'in' for LinkedIn
-    { id: 'fb1', name: 'Facebook', icon: 'f', url: '#' }, // Assuming 'f' for Facebook
-    { id: 'fb2', name: 'Facebook', icon: 'f', url: '#' },
-    { id: 'fb3', name: 'Facebook', icon: 'f', url: '#' },
+    { id: 'linkedin', name: 'LinkedIn', icon: 'in', url: 'https://www.linkedin.com/company/rg-experience/?viewAsMember=true' },
+    { id: 'website', name: 'Website', icon: 'W', url: 'https://rg-experience.com/' },
 ];
 
 // 简单的图标组件

@@ -43,26 +43,38 @@ const MarketplacePage = () => {
     }, []);
 
     // Filter products based on selected filters
-    const filteredProducts = zohoProducts.filter(product => {
-        // Check if product passes all filter criteria
-        if (filters.vendor.length > 0 &&
-            !filters.vendor.includes(product?.Software_Vendor) &&
-            !filters.vendor.includes(product?.Vendor_Name?.name)) {
-            return false;
-        }
-        if (filters.topic.length > 0 && !filters.topic.includes(product?.Topic)) {
-            return false;
-        }
-        if (filters.type.length > 0 && !filters.type.includes(product?.Type)) {
-            return false;
-        }
-        if (filters.providedBy.length > 0 &&
-            !filters.providedBy.includes(product?.Provided_by) &&
-            !filters.providedBy.includes(product?.Owner?.name)) {
-            return false;
-        }
-        return true;
-    });
+    const filteredProducts = zohoProducts
+        .filter(product => {
+            // First filter: Only show products where Product_Active is true
+            if (!product?.Product_Active) {
+                return false;
+            }
+
+            // Check if product passes all other filter criteria
+            if (filters.vendor.length > 0 &&
+                !filters.vendor.includes(product?.Software_Vendor) &&
+                !filters.vendor.includes(product?.Vendor_Name?.name)) {
+                return false;
+            }
+            if (filters.topic.length > 0 && !filters.topic.includes(product?.Topic)) {
+                return false;
+            }
+            if (filters.type.length > 0 && !filters.type.includes(product?.Type)) {
+                return false;
+            }
+            if (filters.providedBy.length > 0 &&
+                !filters.providedBy.includes(product?.Provided_by) &&
+                !filters.providedBy.includes(product?.Owner?.name)) {
+                return false;
+            }
+            return true;
+        })
+        .sort((a, b) => {
+            // Sort: Featured products first
+            if (a?.Featured && !b?.Featured) return -1;
+            if (!a?.Featured && b?.Featured) return 1;
+            return 0;
+        });
 
     const handleFilterChange = (category, value) => {
         setFilters(prev => {
