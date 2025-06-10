@@ -12,11 +12,13 @@ import {
   UserManagementPage
 } from './pages/administration';
 import DashboardPage from './pages/DashboardPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import LoginPage from './pages/LoginPage';
 import MarketplacePage from './pages/MarketplacePage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import SignUpPage from './pages/SignUpPage';
+import VerificationSentPage from './pages/VerificationSentPage';
 
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -28,6 +30,8 @@ const App = () => {
   return (
     <Routes>
       <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/verification-sent" element={<VerificationSentPage />} />
+      <Route path="/verify-email" element={<EmailVerificationPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route
         path="/"

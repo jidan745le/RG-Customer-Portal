@@ -72,11 +72,11 @@ module.exports = {
     port: 8081,
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'https://customerhub-test.rg-experience.com',
         changeOrigin: true,
-        pathRewrite: (path) => {
-          return path.replace('/api', '')
-        },
+        // pathRewrite: (path) => {
+        //   return path.replace('/api', '')
+        // },
       }
     }
   },

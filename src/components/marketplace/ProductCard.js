@@ -26,7 +26,7 @@ const ProductCard = ({ name, logo, description, price, vendor, id, topic, type, 
                 </div>
 
                 <div className={styles.vendor}>
-                    By {vendor || providedBy || 'Unknown'}
+                    By {providedBy || 'Unknown'}
                 </div>
 
                 <div className={styles.tagContainer}>
