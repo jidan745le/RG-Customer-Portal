@@ -23,9 +23,9 @@ import VerificationSentPage from './pages/VerificationSentPage';
 const App = () => {
   const { isAuthenticated, loading } = useAuth();
 
-  if (loading) {
-    return <div>Application Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div>Application Loading...</div>;
+  // }
 
   return (
     <Routes>

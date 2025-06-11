@@ -90,7 +90,7 @@ const SignUpPage = () => {
       // }));
       const response = await apiClient.post('/register', formData);
       console.log(response);
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         navigate('/verification-sent', {
           state: {
             email: formData.email,

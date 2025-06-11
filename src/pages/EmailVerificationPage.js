@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import Logo from '../components/Logo';
 import styles from '../styles/VerificationPage.module.css';
+import apiClient from '../utils/apiClient';
 
 const EmailVerificationPage = () => {
     const [searchParams] = useSearchParams();
@@ -29,17 +30,13 @@ const EmailVerificationPage = () => {
 
         try {
             // Call your backend API
-            const response = await fetch('/api/auth/verify-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token }),
+            const response = await apiClient.post('/verify-email', {
+                token: token
             });
 
-            const data = await response.json();
+            const data = await response.data;
 
-            if (response.ok && data.success) {
+            if (response.status === 200 || response.status === 201) {
                 // Verification successful
                 setVerificationStatus('success');
 

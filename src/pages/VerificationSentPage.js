@@ -1,24 +1,36 @@
+import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import LanguageSelector from '../components/LanguageSelector';
 import Logo from '../components/Logo';
 import styles from '../styles/VerificationPage.module.css';
+import apiClient from '../utils/apiClient';
 
 const VerificationSentPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [resendTimer, setResendTimer] = useState(60);
     const [canResend, setCanResend] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const { email, phone } = location.state || {};
+    const [skipTimer, setSkipTimer] = useState(location.state?.skipTimer || false);
 
     useEffect(() => {
+        console.log('skipTimer0', skipTimer);
         // Redirect if no email provided
         if (!email) {
             navigate('/signup');
             return;
         }
-
+        console.log('skipTimer', skipTimer);
+        // 如果skipTimer为true，直接启用重发按钮
+        if (skipTimer) {
+            setResendTimer(0);
+            setCanResend(true);
+            return;
+        }
+        console.log('skipTimer1', skipTimer);
         // Start countdown timer
         const timer = setInterval(() => {
             setResendTimer(prev => {
@@ -31,23 +43,31 @@ const VerificationSentPage = () => {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [email, navigate]);
+    }, [email, navigate, skipTimer]);
 
     const handleResendEmail = async () => {
-        if (!canResend) return;
+        if (!canResend || loading) return;
 
+        setLoading(true);
         try {
-            // Simulate API call for resending email
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const response = await apiClient.post('/resend-verification', {
+                email: email
+            });
 
             // Reset timer
             setResendTimer(60);
             setCanResend(false);
+            if (skipTimer) {
+                setSkipTimer(false);
+            }
 
             // Show success message (you might want to add a toast notification here)
-            alert('Verification email sent successfully!');
+            message.success('Verification email sent successfully!');
         } catch (error) {
-            alert('Failed to resend email. Please try again.');
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to resend email. Please try again.';
+            message.error(errorMessage);
+        } finally {
+            setLoading(false);
         }
     };
 

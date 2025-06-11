@@ -75,6 +75,22 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             setLoading(false);
             console.error('Login failed:', error);
+
+            // 检查是否是账户未激活错误
+            if (error.response?.status === 403 &&
+                error.response?.data?.message === "Account not activated. Please check your email for verification link.") {
+                // 跳转到验证页面，传递邮箱和直接启用重发标志
+                navigate('/verification-sent', {
+                    state: {
+                        email: credentials.email,
+                        skipTimer: true
+                    }
+                });
+                return false;
+            }
+
+            // message.error(error.response?.data?.message || error.message || 'Failed to login. Please try again.');
+
             throw error; // 将错误抛出，以便在LoginForm中捕获
         }
     };

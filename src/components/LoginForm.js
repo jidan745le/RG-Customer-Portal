@@ -1,3 +1,4 @@
+import { Alert } from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -19,7 +20,13 @@ const LoginForm = () => {
 
     try {
       // 调用login方法，传入登录凭据
-      await login({ email, password });
+      const loginResult = await login({ email, password });
+
+      // 如果login返回false，说明是特殊情况（如账户未激活），已经被处理了，不需要继续
+      if (loginResult === false) {
+        setLoading(false);
+        return;
+      }
 
       // 如果用户选择"记住我"，将Cookie有效期延长到30天
       if (rememberMe) {
@@ -66,7 +73,16 @@ const LoginForm = () => {
         <h1>RG Customer Portal</h1>
       </div>
 
-      {error && <p className={styles.errorMessage}>{error}</p>}
+      {error && (
+        <Alert
+          message={error}
+          type="error"
+          style={{ borderRadius: '0px', marginBottom: '24px' }}
+          showIcon
+          closable
+          onClose={() => setError(null)}
+        />
+      )}
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.inputGroup}>
@@ -83,7 +99,6 @@ const LoginForm = () => {
             required
             autoComplete="email"
             minLength={5}
-            className={error ? styles.inputError : ''}
           />
         </div>
 
@@ -101,7 +116,6 @@ const LoginForm = () => {
             required
             autoComplete="current-password"
             minLength={6}
-            className={error ? styles.inputError : ''}
           />
         </div>
 
