@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import bgImage from '../assets/images/rg_bg.png';
 import LanguageSelector from '../components/LanguageSelector';
 import Logo from '../components/Logo';
 import styles from '../styles/LoginPage.module.css';
@@ -216,8 +217,14 @@ const SignUpPage = () => {
           </div>
         </div>
       </div>
-      <div className={styles.imageSide}>
-        {/* Background image is set via CSS */}
+      <div
+        className={styles.imageSide}
+        style={{ backgroundImage: `url(${bgImage})` }}
+      >
+        <div style={{
+          position: 'absolute', top: '0', left: '0', right: '0', bottom: '0', opacity: 0.48,
+          background: 'linear-gradient(60deg, rgba(211, 212, 220, 0.70) 19.78%, rgba(0, 12, 77, 0.70) 88.11%)'
+        }}></div>
       </div>
     </div>
   );
