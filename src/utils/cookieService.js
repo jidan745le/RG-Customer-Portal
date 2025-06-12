@@ -1,12 +1,65 @@
 /**
  * Cookie 服务工具类 - 处理认证token和用户信息的存储
- * 使用顶级域名cookie实现跨子域名共享
+ * 支持主子应用cookie共享和环境隔离
  */
 class CookieService {
     // 定义共享token的存储键
     static TOKEN_KEY = 'authToken';
     static USER_INFO_KEY = 'userInfo';
-    static DOMAIN = '.rg-experience.com'; // 顶级域名，用于共享cookie
+    static DOMAIN = '.rg-experience.com'; // 默认顶级域名，用于共享cookie
+    static MANUAL_DOMAIN = null; // 手动设置的域名，优先级最高
+
+    /**
+     * 检测当前是否为测试环境
+     * @returns {boolean} 是否为测试环境
+     */
+    static isTestEnvironment() {
+        const hostname = window.location.hostname;
+        return hostname.includes('-test.');
+    }
+
+    /**
+     * 获取环境前缀
+     * @returns {string} 环境前缀
+     */
+    static getEnvironmentPrefix() {
+        return this.isTestEnvironment() ? 'test_' : '';
+    }
+
+    /**
+     * 获取带环境前缀的cookie键名
+     * @param {string} key 原始键名
+     * @returns {string} 带环境前缀的键名
+     */
+    static getEnvironmentKey(key) {
+        return this.getEnvironmentPrefix() + key;
+    }
+
+    /**
+     * 动态获取当前环境的cookie域名
+     * @returns {string|null} 适合当前环境的cookie域名
+     */
+    static getCurrentDomain() {
+        // 优先使用手动设置的域名
+        if (this.MANUAL_DOMAIN !== null) {
+            return this.MANUAL_DOMAIN;
+        }
+
+        const hostname = window.location.hostname;
+
+        // 本地开发环境
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'localhost';
+        }
+
+        // 测试和生产环境都使用顶级域名，通过key前缀区分环境
+        if (hostname.endsWith('.rg-experience.com')) {
+            return '.rg-experience.com';
+        }
+
+        // 其他环境使用默认域名
+        return this.DOMAIN;
+    }
 
     /**
      * 设置cookie
@@ -15,9 +68,12 @@ class CookieService {
      * @param {Object} options cookie选项
      */
     static setCookie(name, value, options = {}) {
+        const currentDomain = this.getCurrentDomain();
+
         const defaultOptions = {
             path: '/',
-            domain: this.DOMAIN,
+            // 只有当currentDomain不为null时才设置domain
+            ...(currentDomain && { domain: currentDomain }),
             // 移除secure选项，允许HTTP协议使用Cookie
             // 在生产环境中应该重新启用此选项
             // secure: window.location.protocol === 'https:',
@@ -46,7 +102,10 @@ class CookieService {
         }
 
         document.cookie = cookieString;
-        console.log(`Cookie set: ${name}=${value.substring(0, 10)}... with options:`, cookieOptions);
+
+        const env = this.isTestEnvironment() ? 'TEST' : 'PROD';
+        const domainInfo = currentDomain ? ` with domain: ${currentDomain}` : ' (no domain - current only)';
+        console.log(`[${env}] Cookie set: ${name}=${value.substring(0, 10)}...${domainInfo}`);
     }
 
     /**
@@ -63,7 +122,9 @@ class CookieService {
                 return decodeURIComponent(cookieValue || '');
             }
         }
-        console.log(`Cookie not found: ${name}`);
+
+        const env = this.isTestEnvironment() ? 'TEST' : 'PROD';
+        console.log(`[${env}] Cookie not found: ${name}`);
         return null;
     }
 
@@ -72,13 +133,17 @@ class CookieService {
      * @param {string} name cookie名称
      */
     static deleteCookie(name) {
+        const currentDomain = this.getCurrentDomain();
+
         // 删除cookie最可靠的方法是将其设置为过期
         this.setCookie(name, '', {
             maxAge: -1, // 立即过期
-            domain: this.DOMAIN,
+            ...(currentDomain && { domain: currentDomain }),
             path: '/'
         });
-        console.log(`Cookie deleted: ${name}`);
+
+        const env = this.isTestEnvironment() ? 'TEST' : 'PROD';
+        console.log(`[${env}] Cookie deleted: ${name}`);
     }
 
     /**
@@ -86,7 +151,7 @@ class CookieService {
      * @param {string} token JWT token
      */
     static setToken(token) {
-        this.setCookie(this.TOKEN_KEY, token);
+        this.setCookie(this.getEnvironmentKey(this.TOKEN_KEY), token);
         return true;
     }
 
@@ -95,7 +160,7 @@ class CookieService {
      * @returns {string|null} JWT token或null
      */
     static getToken() {
-        return this.getCookie(this.TOKEN_KEY);
+        return this.getCookie(this.getEnvironmentKey(this.TOKEN_KEY));
     }
 
     /**
@@ -105,7 +170,7 @@ class CookieService {
     static setUserInfo(userInfo) {
         try {
             const userInfoStr = JSON.stringify(userInfo);
-            this.setCookie(this.USER_INFO_KEY, userInfoStr);
+            this.setCookie(this.getEnvironmentKey(this.USER_INFO_KEY), userInfoStr);
             return true;
         } catch (error) {
             console.error('Failed to save user info to cookie:', error);
@@ -119,7 +184,7 @@ class CookieService {
      */
     static getUserInfo() {
         try {
-            const userInfoStr = this.getCookie(this.USER_INFO_KEY);
+            const userInfoStr = this.getCookie(this.getEnvironmentKey(this.USER_INFO_KEY));
             if (!userInfoStr) return null;
             return JSON.parse(userInfoStr);
         } catch (error) {
@@ -132,9 +197,33 @@ class CookieService {
      * 清除所有认证相关cookie
      */
     static logout() {
-        this.deleteCookie(this.TOKEN_KEY);
-        this.deleteCookie(this.USER_INFO_KEY);
+        this.deleteCookie(this.getEnvironmentKey(this.TOKEN_KEY));
+        this.deleteCookie(this.getEnvironmentKey(this.USER_INFO_KEY));
         return true;
+    }
+
+    /**
+     * 获取当前环境信息
+     * @returns {Object} 环境信息
+     */
+    static getEnvironmentInfo() {
+        const hostname = window.location.hostname;
+        const isTest = this.isTestEnvironment();
+        const domain = this.getCurrentDomain();
+        const isManualDomain = this.MANUAL_DOMAIN !== null;
+        const prefix = this.getEnvironmentPrefix();
+
+        return {
+            hostname,
+            isTest,
+            domain,
+            isManualDomain,
+            manualDomain: this.MANUAL_DOMAIN,
+            environment: isTest ? 'TEST' : 'PROD',
+            keyPrefix: prefix,
+            tokenKey: this.getEnvironmentKey(this.TOKEN_KEY),
+            userInfoKey: this.getEnvironmentKey(this.USER_INFO_KEY)
+        };
     }
 
     /**
@@ -142,16 +231,43 @@ class CookieService {
      * @returns {boolean} 用户是否已登录
      */
     static isLoggedIn() {
-        return !!this.getToken();
+        const token = this.getToken();
+        const env = this.isTestEnvironment() ? 'TEST' : 'PROD';
+        console.log(`[${env}] Login check: ${!!token}`);
+        return !!token;
     }
 
     /**
-     * 为本地开发环境设置域名
-     * @param {string} domain 使用的域名
+     * 为特定环境设置域名
+     * @param {string|null} domain 使用的域名，null表示不设置domain
      */
     static setDomain(domain) {
-        this.DOMAIN = domain;
-        console.log(`Cookie domain set to: ${domain}`);
+        this.MANUAL_DOMAIN = domain;
+        console.log(`Cookie domain manually set to: ${domain || 'null (current domain only)'}`);
+
+        // 打印当前生效的域名
+        const currentDomain = this.getCurrentDomain();
+        console.log(`Current effective domain: ${currentDomain || 'null (current domain only)'}`);
+    }
+
+    /**
+     * 重置为自动域名检测
+     */
+    static resetDomain() {
+        this.MANUAL_DOMAIN = null;
+        console.log('Cookie domain reset to auto-detection');
+
+        // 打印当前生效的域名
+        const currentDomain = this.getCurrentDomain();
+        console.log(`Current effective domain: ${currentDomain || 'null (current domain only)'}`);
+    }
+
+    /**
+     * 获取当前使用的域名
+     * @returns {string|null} 当前cookie域名
+     */
+    static getDomain() {
+        return this.getCurrentDomain();
     }
 }
 
@@ -159,5 +275,8 @@ class CookieService {
 if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
     CookieService.setDomain('localhost');
 }
+
+// 启动时打印环境信息
+console.log('CookieService Environment Info:', CookieService.getEnvironmentInfo());
 
 export default CookieService; 
