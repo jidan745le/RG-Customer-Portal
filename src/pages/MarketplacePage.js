@@ -320,8 +320,8 @@ const MarketplacePage = () => {
                         <label className={styles.filterOption}>
                             <input
                                 type="checkbox"
-                                checked={filters.providedBy.includes('RG Experience')}
-                                onChange={() => handleFilterChange('providedBy', 'RG Experience')}
+                                checked={filters.providedBy.includes('RG.Experience')}
+                                onChange={() => handleFilterChange('providedBy', 'RG.Experience')}
                             />
                             RG Experience
                         </label>

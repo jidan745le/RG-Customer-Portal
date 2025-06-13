@@ -262,18 +262,35 @@
 
 .productDescription {
   margin-top: 0px;
+  padding-right: 100px;
+  line-height: 1.5;
 }
 
 .productDescription h3 {
   font-size: 1.2rem;
   color: #333;
   margin-bottom: 15px;
+  line-height: 1.5;
 }
 
 .productDescription p {
-  margin: 0 0 15px 0;
-  line-height: 1.6;
+  margin: 0 0 18px 0;
+  line-height: 1.8;
   color: #555;
+  font-size: 0.95rem;
+}
+
+.productDescription ul,
+.productDescription ol {
+  margin: 0 0 18px 0;
+  padding-left: 20px;
+  line-height: 1.8;
+  color: #555;
+}
+
+.productDescription li {
+  margin-bottom: 8px;
+  line-height: 1.8;
 }
 
 .documentationSection {

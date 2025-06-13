@@ -337,7 +337,7 @@ const ProductDetailPage = () => {
 
                     <div className={styles.sidebarBlock}>
                         <div className={styles.vendorInfo}>
-                            <h3>Third-Party software name: {product.Software_Vendor || product.Vendor_Name?.name || ''}</h3>
+                            <h3>Third-Party: {product.Software_Vendor || product.Vendor_Name?.name || ''}</h3>
                             <p>Price: {product.Unit_Price === 0 ? 'Free' : (product.Pricing || '')}</p>
                         </div>
 
