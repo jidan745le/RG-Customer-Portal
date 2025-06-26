@@ -20,6 +20,7 @@ const MarketplacePage = () => {
         providedBy: []
     });
 
+    const [searchKeyword, setSearchKeyword] = useState('');
     const [zohoProducts, setZohoProducts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -43,12 +44,31 @@ const MarketplacePage = () => {
         fetchZohoProducts();
     }, []);
 
-    // Filter products based on selected filters
+    // Filter products based on selected filters and search keyword
     const filteredProducts = zohoProducts
         .filter(product => {
             // First filter: Only show products where Product_Active is true
             if (!product?.Product_Active) {
                 return false;
+            }
+
+            // Search keyword filter
+            if (searchKeyword.trim()) {
+                const keyword = searchKeyword.toLowerCase();
+                const searchableText = [
+                    product?.Title_External,
+                    product?.Sub_Title,
+                    product?.Software_Vendor,
+                    product?.Vendor_Name?.name,
+                    product?.Topic,
+                    product?.Type,
+                    product?.Provided_by,
+                    product?.Owner?.name
+                ].filter(Boolean).join(' ').toLowerCase();
+
+                if (!searchableText.includes(keyword)) {
+                    return false;
+                }
             }
 
             // Check if product passes all other filter criteria
@@ -170,8 +190,10 @@ const MarketplacePage = () => {
                         <div className={styles.searchBox}>
                             <input
                                 type="text"
-                                placeholder="Search for..."
+                                placeholder="Search for products, vendors, topics..."
                                 className={styles.searchInput}
+                                value={searchKeyword}
+                                onChange={(e) => setSearchKeyword(e.target.value)}
                             />
                         </div>
                         {!isLoggedIn && (
@@ -179,7 +201,7 @@ const MarketplacePage = () => {
                         )}
                     </div>
                     <div className={styles.bannerImage}>
-                        <img style={{ position: 'absolute', bottom: 0, right: 0, width: '70%' }} src={marketplaceBanner} alt="Marketplace" />
+                        <img style={{ position: 'absolute', top: 0, bottom: 0, right: 0, height: '100%' }} src={marketplaceBanner} alt="Marketplace" />
                     </div>
                 </div>
             </section>
