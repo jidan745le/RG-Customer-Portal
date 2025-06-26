@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import marketplaceBanner from '../assets/images/marketplace-banner.png';
 import FAQItem from '../components/marketplace/FAQItem';
 import ProductCard from '../components/marketplace/ProductCard';
 import { useAuth } from '../context/AuthContext';
@@ -178,7 +179,7 @@ const MarketplacePage = () => {
                         )}
                     </div>
                     <div className={styles.bannerImage}>
-                        <img src="/marketplace-banner.png" alt="Marketplace" />
+                        <img style={{ position: 'absolute', bottom: 0, right: 0, width: '70%' }} src={marketplaceBanner} alt="Marketplace" />
                     </div>
                 </div>
             </section>
